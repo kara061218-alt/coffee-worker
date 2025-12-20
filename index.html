@@ -10,7 +10,7 @@
             --surface: #0a0a0a;
             --border: #222222;
             --text-main: #ffffff;
-            --text-sub: #d1d1d1; /* さらに明るくし、カラフルな画像とのバランスを調整 */
+            --text-sub: #d1d1d1;
             --accent: #ffffff;
         }
 
@@ -30,10 +30,25 @@
             position: fixed; top: 0; width: 100%; padding: 40px 5vw;
             display: flex; justify-content: space-between; align-items: center; z-index: 1000;
             background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            box-sizing: border-box;
         }
         .logo { font-size: 1rem; letter-spacing: 0.5em; cursor: pointer; font-weight: 400; text-transform: uppercase; }
+        .nav-right { display: flex; align-items: center; }
         .nav-links span { margin-left: 40px; font-size: 0.7rem; letter-spacing: 0.2em; cursor: pointer; opacity: 0.8; transition: 0.4s; }
         .nav-links span:hover { opacity: 1; color: var(--text-main); }
+        
+        /* Language Switcher */
+        .lang-switch {
+            margin-left: 60px;
+            display: flex;
+            gap: 15px;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            border-left: 1px solid var(--border);
+            padding-left: 20px;
+        }
+        .lang-btn { cursor: pointer; opacity: 0.4; transition: 0.3s; }
+        .lang-btn.active { opacity: 1; font-weight: 600; }
 
         /* Button Architecture */
         .btn {
@@ -51,13 +66,13 @@
         .hero-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=2000') center/cover;
-            filter: brightness(40%); /* 画像はカラフルなまま、文字を読ませるために明度を調整 */
+            filter: brightness(40%);
         }
         .hero-content { position: relative; text-align: center; max-width: 900px; padding: 0 20px; }
         .hero h1 { font-size: clamp(3rem, 12vw, 7rem); font-weight: 100; letter-spacing: 0.4em; margin: 0; text-transform: uppercase; text-shadow: 0 10px 40px rgba(0,0,0,0.8); }
         .hero p { font-size: 0.85rem; letter-spacing: 0.6em; color: var(--text-main); margin-top: 30px; font-weight: 400; }
 
-        /* Concept Layout (Colorful Grid) */
+        /* Concept Layout */
         .concept-grid { padding: 100px 5vw; display: grid; grid-template-columns: repeat(12, 1fr); gap: 40px; }
         .concept-item { grid-column: span 4; overflow: hidden; }
         .concept-item.wide { grid-column: span 8; }
@@ -112,6 +127,7 @@
             .gallery { grid-template-columns: repeat(2, 1fr); gap: 30px; }
             .detail-layout { grid-template-columns: 1fr; }
             .detail-img { height: 50vh; }
+            .lang-switch { margin-left: 20px; }
         }
         @media (max-width: 768px) {
             .gallery { grid-template-columns: 1fr; }
@@ -119,6 +135,7 @@
             .concept-item { margin-bottom: 30px; }
             .hero h1 { font-size: 3rem; }
             .detail-body { padding: 80px 5vw; }
+            .nav-links { display: none; } /* モバイル時はリンクを簡略化 */
         }
     </style>
 </head>
@@ -126,9 +143,15 @@
 
     <nav>
         <div class="logo" onclick="showPage('index')">YURUCAFE / STUDY 01</div>
-        <div class="nav-links">
-            <span onclick="showPage('cafes')">ARCHIVE</span>
-            <span onclick="showPage('booking')">PRACTICE</span>
+        <div class="nav-right">
+            <div class="nav-links">
+                <span onclick="showPage('cafes')">ARCHIVE</span>
+                <span onclick="showPage('booking')">PRACTICE</span>
+            </div>
+            <div class="lang-switch">
+                <div class="lang-btn active" onclick="setLanguage('ja')" id="btn-ja">JP</div>
+                <div class="lang-btn" onclick="setLanguage('en')" id="btn-en">EN</div>
+            </div>
         </div>
     </nav>
 
@@ -139,7 +162,7 @@
             <div class="hero-content">
                 <h1>Silence</h1>
                 <p>AN ACADEMIC APPROACH TO DIALOGUE</p>
-                <div class="btn" onclick="showPage('cafes')" style="margin-top: 60px;">Explore Archive</div>
+                <div class="btn lang-target" data-ja="Explore Archive" data-en="Explore Archive" onclick="showPage('cafes')" style="margin-top: 60px;">Explore Archive</div>
             </div>
         </div>
 
@@ -148,16 +171,10 @@
             <div class="concept-item wide"><img src="https://images.unsplash.com/photo-1525193612562-0ec53b0e5d7c?q=80&w=2000" alt="Colorful Cafe Interior"></div>
             
             <div class="concept-text-block">
-                <h2>コーヒー、そして言葉の余白</h2>
-                <p>
-                    yurucafeは、単なるカフェ紹介サイトではありません。それは<strong>「社会における静かな対話」</strong>を再定義するための学術的かつ実践的なプロジェクトです。私たちの目的は収益の最大化ではなく、多忙を極める現代社会において、人々が心の鎧を脱ぎ、自分自身の個性を安心して表現できる「サードプレイス」の可能性を探求することにあります。
-                </p>
-                <p>
-                    特に留学生や言語学習者にとって、新しい環境での対話は常に緊張を伴います。yurucafeでは、コーヒーを単なる飲料としてではなく、<strong>「時間を減速させ、言葉を媒介する装置」</strong>として扱います。一杯のコーヒーが提供されるまでの数分間、そしてそれを味わうひと時が、沈黙を許容し、差異を尊重する「ゆるやかなつながり」を生み出します。
-                </p>
-                <p>
-                    黒を基調としたこのプラットフォームに彩り豊かな画像が並ぶのは、沈黙の中にこそ多様な個性が鮮やかに存在していることを示すためです。私たちは契約カフェという具体的な物理空間を活用し、理論と実践を結びつけた課外活動としての成果を追求しています。
-                </p>
+                <h2 class="lang-target" data-ja="コーヒー、そして言葉の余白" data-en="Coffee, and the Margin of Words">コーヒー、そして言葉の余白</h2>
+                <div id="index-concept-body">
+                    <!-- JS Injection based on language -->
+                </div>
             </div>
 
             <div class="concept-item wide"><img src="https://images.unsplash.com/photo-1524350303359-8683aa55d162?q=80&w=2000" alt="People from different cultures"></div>
@@ -170,7 +187,9 @@
         <div class="container">
             <div class="gallery-header">
                 <h2>ARCHIVE: Partner Spaces</h2>
-                <p>yurucafeの思想に共鳴し、対話の実験場として機能する6つの契約空間。モノトーンの世界を鮮やかに彩る、各店舗独自の哲学と「対話の作法」に触れてください。各画像をクリックして詳細を確認できます。</p>
+                <p id="archive-description" class="lang-target">
+                    <!-- JS Injection -->
+                </p>
             </div>
             <div class="gallery" id="cafe-list">
                 <!-- Data-driven injection -->
@@ -189,25 +208,56 @@
             <div class="booking-wrap">
                 <div class="gallery-header" style="text-align: center; border: none; padding: 0; margin-bottom: 60px;">
                     <h2 style="margin-bottom: 30px;">Practice Reservation</h2>
-                    <p style="margin: 0 auto; max-width: 750px;">
-                        yurucafeが主催する対話イベントへの参加予約。カレンダーから希望日を選択してください。このセッションは、言語の壁を越え、個人の背景を尊重しながら鮮やかな交流の時間を共有するための実践的なワークショップです。
+                    <p id="booking-description" class="lang-target" style="margin: 0 auto; max-width: 750px;">
+                        <!-- JS Injection -->
                     </p>
                 </div>
                 <div class="calendar" id="calendar"></div>
                 <div id="booking-status" style="font-size: 0.9rem; letter-spacing: 0.2em; margin-bottom: 40px; color: #fff; height: 24px; font-weight: 500;"></div>
-                <div class="btn" onclick="confirmBooking()">Send Request</div>
+                <div class="btn lang-target" data-ja="リクエストを送信" data-en="Send Request" onclick="confirmBooking()">Send Request</div>
             </div>
         </div>
     </section>
 
     <footer>
         <div class="footer-logo">YURUCAFE.ORG</div>
-        <div class="footer-copy">
+        <div class="footer-copy lang-target" 
+             data-ja="© 2025 社会デザインと学術的探求のための学際的プロジェクト" 
+             data-en="© 2025 AN INTERDISCIPLINARY PROJECT FOR SOCIAL DESIGN & ACADEMIC EXPLORATION">
             © 2025 AN INTERDISCIPLINARY PROJECT FOR SOCIAL DESIGN & ACADEMIC EXPLORATION
         </div>
     </footer>
 
     <script>
+        let currentLang = 'ja';
+
+        const i18n = {
+            indexConcept: {
+                ja: `
+                    <p>yurucafeは、単なるカフェ紹介サイトではありません。それは<strong>「社会における静かな対話」</strong>を再定義するための学術的かつ実践的なプロジェクトです。私たちの目的は収益の最大化ではなく、多忙を極める現代社会において、人々が心の鎧を脱ぎ、自分自身の個性を安心して表現できる「サードプレイス」の可能性を探求することにあります。</p>
+                    <p>特に留学生や言語学習者にとって、新しい環境での対話は常に緊張を伴います。yurucafeでは、コーヒーを単なる飲料としてではなく、<strong>「時間を減速させ、言葉を媒介する装置」</strong>として扱います。一杯のコーヒーが提供されるまでの数分間、沈黙を許容し、差異を尊重する「ゆるやかなつながり」を生み出します。</p>
+                    <p>黒を基調としたこのプラットフォームに彩り豊かな画像が並ぶのは、沈黙の中にこそ多様な個性が鮮やかに存在していることを示すためです。私たちは契約カフェという具体的な物理空間を活用し、理論と実践を結びつけた成果を追求しています。</p>
+                `,
+                en: `
+                    <p>yurucafe is more than just a cafe directory. It is an academic and practical project aimed at redefining <strong>"silent dialogue in society."</strong> Our goal is not to maximize profit, but to explore the possibilities of a "third place" where people in a busy modern world can let down their guard and express their individuality with peace of mind.</p>
+                    <p>For international students and language learners, interaction in a new environment often brings tension. At yurucafe, we treat coffee not just as a beverage, but as a <strong>"device to slow down time and mediate words."</strong> The minutes leading up to a serving create a "gentle connection" that allows for silence and respects differences.</p>
+                    <p>The vibrant images set against this black platform symbolize the brilliant individuality that exists within silence. We utilize physical partner cafes to pursue outcomes that bridge theory and practice.</p>
+                `
+            },
+            archiveDesc: {
+                ja: "yurucafeの思想に共鳴し、対話の実験場として機能する6つの契約空間。モノトーンの世界を鮮やかに彩る、各店舗独自の哲学と「対話の作法」に触れてください。",
+                en: "Six partner spaces functioning as experimental fields for dialogue, resonating with the philosophy of yurucafe. Encounter the unique philosophies and 'manners of dialogue' that vividly color the monotone world."
+            },
+            bookingDesc: {
+                ja: "yurucafeが主催する対話イベントへの参加予約。カレンダーから希望日を選択してください。このセッションは、言語の壁を越え、個人の背景を尊重しながら鮮やかな交流の時間を共有するための実践的なワークショップです。",
+                en: "Reservation for dialogue events organized by yurucafe. Please select your preferred date from the calendar. These sessions are practical workshops for sharing vibrant interaction while respecting personal backgrounds and transcending language barriers."
+            },
+            bookingAlert: {
+                ja: "予約リクエストが送信されました。詳細については追ってメールでご連絡いたします。",
+                en: "Reservation request sent to yurucafe administration. We will contact you shortly via email."
+            }
+        };
+
         const cafes = [
             { id: 1, name: "灯 - Akari", owner: "Haruki", img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=1200", meta: "Architecture of Light" },
             { id: 2, name: "Nest", owner: "Mina", img: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1200", meta: "Urban Sanctuary" },
@@ -217,11 +267,38 @@
             { id: 6, name: "Harbor", owner: "Sofia", img: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?q=80&w=1200", meta: "Cross-Cultural Dock" }
         ];
 
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+
+            // Static Text Updates
+            document.querySelectorAll('.lang-target').forEach(el => {
+                if (el.dataset[lang]) {
+                    el.innerText = el.dataset[lang];
+                }
+            });
+
+            // Dynamic Block Updates
+            document.getElementById('index-concept-body').innerHTML = i18n.indexConcept[lang];
+            document.getElementById('archive-description').innerText = i18n.archiveDesc[lang];
+            document.getElementById('booking-description').innerText = i18n.bookingDesc[lang];
+
+            // Update visible content if on dynamic pages
+            const activePage = document.querySelector('.page.active');
+            if (activePage.id === 'cafe') {
+                // Re-render detail to update language
+                const currentId = activePage.dataset.cafeId;
+                if(currentId) renderDetail(parseInt(currentId));
+            }
+        }
+
         function showPage(pageId, cafeId = null) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = document.getElementById(pageId);
             if (target) {
                 target.classList.add('active');
+                target.dataset.cafeId = cafeId || "";
                 window.scrollTo(0, 0);
             }
 
@@ -248,25 +325,35 @@
         function renderDetail(id) {
             const c = cafes.find(x => x.id === id);
             const content = document.getElementById('cafe-detail-content');
+            
+            const detailText = {
+                ja: `
+                    <p>店主 ${c.owner} は、コーヒーを淹れるプロセスにおける「沈黙」が、最も雄弁な対話の形であると考えています。この空間では、効率性やスピードといった日常の論理は一度棚上げされ、一杯のカップの中に凝縮された時間と向き合うことが求められます。</p>
+                    <p>「呼んでほしい名前」で呼び合うことから始まるこの場所での対話は、属性や肩書きを超えた純粋な自己の交差を目的としています。特に留学生にとっては、母国語ではない言葉の不自由さが、かえって感情の深部を伝える助けになることもあります。</p>
+                    <p>空間設計においては、視線の交差を緩やかに制限し、プライバシーと開放感の絶妙なバランスを保っています。この「守られた空間」という感覚が、正直な会話を生むための絶対的な条件です。</p>
+                `,
+                en: `
+                    <p>The owner, ${c.owner}, believes that "silence" in the process of brewing coffee is the most eloquent form of dialogue. In this space, the logic of everyday life—efficiency and speed—is temporarily suspended, and you are asked to face the time condensed within a single cup.</p>
+                    <p>Starting with calling each other by our preferred names, dialogue here aims for a pure intersection of selves that transcends attributes and titles. For international students, the limitations of a non-native language can sometimes help convey deeper emotions.</p>
+                    <p>In the spatial design, eye contact is gently limited, maintaining an exquisite balance between privacy and openness. This sense of being in a "protected space" is an absolute requirement for generating honest conversation.</p>
+                `
+            };
+
+            const metaLabel = currentLang === 'ja' ? 'ケーススタディ' : 'CASE STUDY';
+            const partnerLabel = currentLang === 'ja' ? 'プロジェクトパートナー' : 'PROJECT PARTNER';
+            const btnLabel = currentLang === 'ja' ? 'この空間でのイベントに参加する' : 'Participate in this space';
+
             content.innerHTML = `
                 <div class="detail-layout">
                     <div class="detail-img" style="background-image: url('${c.img}')"></div>
                     <div class="detail-body">
-                        <span class="detail-meta">CASE STUDY / 0${c.id} / PROJECT PARTNER: ${c.owner}</span>
+                        <span class="detail-meta">${metaLabel} / 0${c.id} / ${partnerLabel}: ${c.owner}</span>
                         <h2>${c.name}</h2>
                         <div class="detail-content">
-                            <p>
-                                店主 ${c.owner} は、コーヒーを淹れるプロセスにおける「沈黙」が、最も雄弁な対話の形であると考えています。この空間では、効率性やスピードといった日常の論理は一度棚上げされ、一杯のカップの中に凝縮された時間と向き合うことが求められます。
-                            </p>
-                            <p>
-                                「呼んでほしい名前」で呼び合うことから始まるこの場所での対話は、属性や肩書きを超えた純粋な自己の交差を目的としています。特に留学生にとっては、母国語ではない言葉の不自由さが、かえって感情の深部を伝える助けになることもあります。ここでは、言葉の拙さは「個性」として歓迎されます。
-                            </p>
-                            <p>
-                                空間設計においては、視線の交差を緩やかに制限し、プライバシーと開放感の絶妙なバランスを保っています。この「守られた空間」という感覚が、正直な会話を生むための絶対的な条件です。鮮やかな香りに包まれながら、あなたの物語を聞かせてください。
-                            </p>
+                            ${detailText[currentLang]}
                         </div>
                         <div class="video-box">ATMOSPHERE DOCUMENTARY / 1:20 / STUDY ARCHIVE</div>
-                        <div class="btn" onclick="showPage('booking')" style="margin-top: 40px;">Participate in this space</div>
+                        <div class="btn" onclick="showPage('booking')" style="margin-top: 40px;">${btnLabel}</div>
                     </div>
                 </div>
             `;
@@ -281,12 +368,16 @@
         function selectDate(el, d) {
             document.querySelectorAll('.cal-day').forEach(i => i.classList.remove('selected'));
             el.classList.add('selected');
-            document.getElementById('booking-status').innerText = `SELECTED: DECEMBER ${d}, 2025 - SESSION AVAILABLE`;
+            const status = currentLang === 'ja' ? `選択済み: 2025年 12月 ${d}日 - 予約可能です` : `SELECTED: DECEMBER ${d}, 2025 - SESSION AVAILABLE`;
+            document.getElementById('booking-status').innerText = status;
         }
 
         function confirmBooking() {
-            alert("Reservation request sent to yurucafe administration. We will contact you shortly via email.");
+            alert(i18n.bookingAlert[currentLang]);
         }
+
+        // Initial Load
+        window.onload = () => setLanguage('ja');
     </script>
 </body>
 </html>
