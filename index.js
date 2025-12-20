@@ -2,92 +2,131 @@ export default {
   async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
 
-    // --- カフェデータ（オリジナルの5つを追加した合計6店舗） ---
+    // --- データ定義 ---
     const cafes = [
-      { id: "cafe1", name: "こもれびカフェ", owner: "佐藤さん", message: "ゆっくりした日本語で話しましょう。沈黙も大切にしています。", color: "#E8F5E9", tag: "静かに過ごしたい人" },
-      { id: "cafe2", name: "陽だまりテラス", owner: "ケンさん", message: "海外生活の経験があります。孤独な気持ち、よくわかりますよ。", color: "#FFF3E0", tag: "海外経験のある店主" },
-      { id: "cafe3", name: "街角ライブラリー", owner: "マキさん", message: "本に囲まれてお茶を。言葉が見つからない時は本を眺めてもOK。", color: "#E3F2FD", tag: "読書・落ち着き" },
-      { id: "cafe4", name: "ひまわりキッチン", owner: "よしえさん", message: "「お腹すいてない？」お母さんのような温かいごはんも出せますよ。", color: "#FFFDE7", tag: "家庭的な雰囲気" },
-      { id: "cafe5", name: "Green Share", owner: "タカさん", message: "植物がたくさん。言葉の壁を気にせず、リラックスして過ごせます。", color: "#F1F8E9", tag: "自然・リラックス" },
-      { id: "cafe6", name: "月灯りカフェ", owner: "ジュンさん", message: "夜の寂しい時間に。少しだけ勇気を出して扉を開けてみて。", color: "#F5F5F5", tag: "夜も営業中" }
+      { id: "komorebi", name: "こもれびカフェ", owner: "Sato", theme: "静かな対話", color: "#6F4E37", img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80" },
+      { id: "hidamari", name: "陽だまりテラス", owner: "Ken", theme: "文化の交差点", color: "#8D6E63", img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80" },
+      { id: "library", name: "街角ライブラリー", owner: "Maki", theme: "言葉を紡ぐ", color: "#5D4037", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80" },
+      { id: "kitchen", name: "ひまわりキッチン", owner: "Yoshie", theme: "家庭の温もり", color: "#D4A373", img: "https://images.unsplash.com/photo-1559925393-8be0ec41b5ec?auto=format&fit=crop&w=800&q=80" },
+      { id: "green", name: "Green Share", owner: "Taka", theme: "自然と呼吸", color: "#A1887F", img: "https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=800&q=80" },
+      { id: "tsukiaari", name: "月灯りカフェ", owner: "Jun", theme: "夜の安らぎ", color: "#3E2723", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=800&q=80" }
     ];
 
-    // --- 詳細ページの生成 ---
+    // --- HTMLパーツ ---
+    const head = `
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>yurucafe | ゆるやかな対話の場</title>
+        <style>
+          :root { --main-brown: #6F4E37; --bg-beige: #FDFBF8; --text-dark: #4A3728; }
+          body { margin: 0; font-family: "serif"; background: var(--bg-beige); color: var(--text-dark); overflow-x: hidden; }
+          header { position: fixed; top: 0; width: 100%; padding: 20px; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; background: rgba(253, 251, 248, 0.9); }
+          .logo { font-size: 1.5rem; font-weight: bold; color: var(--main-brown); text-decoration: none; }
+          .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1447933630913-bb79bd6511d6?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center; color: white; padding: 20px; }
+          .hero h1 { font-size: 3rem; margin: 0; letter-spacing: 0.2rem; }
+          .hero p { font-size: 1.2rem; margin-top: 20px; max-width: 600px; }
+          .section { padding: 80px 20px; max-width: 800px; margin: 0 auto; }
+          .img-full { width: 100%; border-radius: 10px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+          .cafe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
+          .cafe-card { background: white; border-radius: 15px; overflow: hidden; text-decoration: none; color: inherit; transition: transform 0.3s; border: 1px solid #eee; }
+          .cafe-card:hover { transform: translateY(-5px); }
+          .cafe-card img { width: 100%; height: 200px; object-fit: cover; }
+          .cafe-card-content { padding: 20px; }
+          .btn { display: inline-block; background: var(--main-brown); color: white; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; margin-top: 20px; }
+          .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 20px; }
+          .calendar-day { padding: 15px; border: 1px solid #ddd; text-align: center; cursor: pointer; border-radius: 5px; }
+          .calendar-day:hover { background: #EAD7BB; }
+          .calendar-day.selected { background: var(--main-brown); color: white; }
+          @media (max-width: 600px) { .hero h1 { font-size: 2rem; } }
+        </style>
+      </head>
+    `;
+
+    // --- ルーティング処理 ---
+    
+    // 1. 予約完了
+    if (pathname === "/booking-success") {
+      return new Response(`<html>${head}<body><header><a href="/" class="logo">yurucafe</a></header><div class="section" style="margin-top:100px; text-align:center;"><h1>予約リクエスト完了</h1><p>予約リクエストを受け付けました。<br>店主より後ほどご連絡します。コーヒーを淹れてお待ちしております。</p><a href="/" class="btn">トップへ戻る</a></div></body></html>`, { headers: { "content-type": "text/html;charset=UTF-8" } });
+    }
+
+    // 2. 予約ページ
+    if (pathname === "/booking") {
+      return new Response(`<html>${head}<body><header><a href="/" class="logo">yurucafe</a></header><div class="section" style="margin-top:100px;"><h1>対話の時間を予約する</h1><p>ご希望の日程を選択してください。</p><div class="calendar">${Array.from({length: 14}, (_, i) => `<div class="calendar-day" onclick="this.classList.toggle('selected')">${12+i+1}<br><small>Dec</small></div>`).join('')}</div><a href="/booking-success" class="btn" style="width:100%; text-align:center; box-sizing:border-box;">予約を確定する</a></div></body></html>`, { headers: { "content-type": "text/html;charset=UTF-8" } });
+    }
+
+    // 3. カフェ詳細
     if (pathname.startsWith("/cafe/")) {
       const id = pathname.split("/")[2];
       const cafe = cafes.find(c => c.id === id);
-      if (!cafe) return new Response("Not Found", { status: 404 });
-
-      return new Response(`
-        <!DOCTYPE html>
-        <html lang="ja">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>${cafe.name}</title>
-          <style>
-            body { font-family: sans-serif; background: #FDFBF8; color: #4A3728; margin: 0; padding: 20px; text-align: center; }
-            .detail-card { background: white; padding: 40px 20px; border-radius: 20px; border: 2px solid #D7CCC8; max-width: 500px; margin: 60px auto; }
-            .owner-img { width: 100px; height: 100px; background: #D7CCC8; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
-            .btn-book { display: block; background: #6F4E37; color: white; padding: 20px; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 30px; }
-            .back-link { display: inline-block; margin-top: 20px; color: #8D6E63; text-decoration: none; font-size: 0.9rem; }
-          </style>
-        </head>
-        <body>
-          <div class="detail-card">
-            <div class="owner-img">😊</div>
-            <h1>${cafe.name}</h1>
-            <p style="font-weight:bold; color:#A1887F;">店主：${cafe.owner}</p>
-            <p style="text-align:left; margin: 20px 0;">${cafe.message}</p>
-            <a href="#" class="btn-book">このカフェを予約する</a>
-            <a href="/" class="back-link">← 一覧に戻る</a>
+      return new Response(`<html>${head}<body><header><a href="/" class="logo">yurucafe</a></header>
+        <div class="hero" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${cafe.img}'); height: 60vh;">
+          <h1>${cafe.name}</h1>
+          <p>店主：${cafe.owner}</p>
+        </div>
+        <div class="section">
+          <h2>一杯のコーヒーから始まる、正直な会話。</h2>
+          <p>ここでは日本語が上手である必要はありません。大切なのは、あなたの背景や、あなたが今日感じたことを、自分の言葉で伝えてみることです。</p>
+          <img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=800&q=80" class="img-full" alt="Cafe atmosphere">
+          <p>店主の${cafe.owner}は、コーヒーの香りと共に、あなたの物語をゆっくりと待っています。</p>
+          <div style="background:#f0f0f0; padding:40px; border-radius:10px; text-align:center;">
+             <p>（ここに1分間の紹介動画が流れます）</p>
           </div>
-        </body>
-        </html>
-      `, { headers: { "content-type": "text/html;charset=UTF-8" } });
+          <div style="text-align:center; margin-top:40px;">
+            <a href="/booking" class="btn">このカフェでの対話を予約する</a>
+          </div>
+        </div>
+      </body></html>`, { headers: { "content-type": "text/html;charset=UTF-8" } });
     }
 
-    // --- メインページの生成 ---
-    const cafeListHtml = cafes.map(cafe => `
-      <a href="/cafe/${cafe.id}" style="text-decoration:none; color:inherit;">
-        <div style="background:${cafe.color}; padding:20px; border-radius:15px; margin-bottom:15px; text-align:left; border:1px solid rgba(0,0,0,0.05);">
-          <span style="font-size:0.7rem; background:white; padding:2px 8px; border-radius:10px; color:#8D6E63;">${cafe.tag}</span>
-          <h3 style="margin:10px 0 5px 0;">${cafe.name}</h3>
-          <p style="font-size:0.9rem; margin:0; opacity:0.8;">店主：${cafe.owner}</p>
+    // 4. カフェ一覧
+    if (pathname === "/cafes") {
+      const cards = cafes.map(c => `
+        <a href="/cafe/${c.id}" class="cafe-card">
+          <img src="${c.img}" alt="${c.name}">
+          <div class="cafe-card-content">
+            <small style="color:${c.color}; font-weight:bold;">${c.theme}</small>
+            <h3 style="margin:5px 0;">${c.name}</h3>
+            <p style="font-size:0.8rem; opacity:0.7;">店主：${c.owner}</p>
+          </div>
+        </a>
+      `).join('');
+      return new Response(`<html>${head}<body><header><a href="/" class="logo">yurucafe</a></header>
+        <div class="section" style="margin-top:80px;">
+          <h1>提携カフェ</h1>
+          <p>あなたに合った「居場所」を見つけてください。</p>
+          <div class="cafe-grid">${cards}</div>
         </div>
-      </a>
-    `).join("");
+      </body></html>`, { headers: { "content-type": "text/html;charset=UTF-8" } });
+    }
 
-    const mainHtml = `
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>留学生の対話カフェ</title>
-    <style>
-        body { margin: 0; font-family: sans-serif; color: #4A3728; background: #FDFBF8; text-align: center; }
-        header { position: fixed; top: 0; width: 100%; background: white; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: bold; z-index: 10; }
-        .hero { padding: 100px 20px 40px; background: linear-gradient(180deg, #EAD7BB 0%, #FDFBF8 100%); }
-        .container { max-width: 500px; margin: 0 auto; padding: 0 20px 60px; }
-        h2 { color: #6F4E37; margin-top: 40px; }
-    </style>
-</head>
-<body>
-    <header>留学生の対話カフェ</header>
-    <section class="hero">
-        <h1 style="font-size:1.8rem;">ひとりじゃないよ</h1>
-        <p>安心して話せる6つの居場所</p>
-    </section>
-    <div class="container">
-        <h2>提携カフェ一覧</h2>
-        <p style="font-size:0.9rem; margin-bottom:20px;">気になるカフェをタップしてください</p>
-        ${cafeListHtml}
-    </div>
-</body>
-</html>
-    `;
+    // 5. トップページ
+    return new Response(`
+      <html>${head}
+      <body>
+        <header><a href="/" class="logo">yurucafe</a></header>
+        <section class="hero">
+          <h1>心をほぐす、<br>ゆるやかな対話。</h1>
+          <p>コーヒーは、正直な会話を生むための「媒介」です。<br>留学生のための、安心して自分を表現できる場所。</p>
+          <a href="#concept" class="btn">想いを知る</a>
+        </section>
+        
+        <section id="concept" class="section">
+          <h2 style="text-align:center;">Concept</h2>
+          <p>忙しい毎日の中で、自分の個性を置いてけぼりにしていませんか？<br>yurucafeは、文化や言語の壁を超え、一人の人間として向き合える空間を提供します。</p>
+          
+          <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80" class="img-full">
+          <p>アカデミックな探究と、日々の安らぎ。その両立を、私たちは「一杯のコーヒー」と「対話」で実現します。</p>
+          <div style="text-align:center; margin-top:50px;">
+            <a href="/cafes" class="btn">カフェを探す</a>
+          </div>
+        </section>
 
-    return new Response(mainHtml, { headers: { "content-type": "text/html;charset=UTF-8" } });
+        <footer style="padding:40px; text-align:center; font-size:0.8rem; opacity:0.6;">
+          &copy; 2025 yurucafe.org
+        </footer>
+      </body>
+      </html>
+    `, { headers: { "content-type": "text/html;charset=UTF-8" } });
   },
 };
