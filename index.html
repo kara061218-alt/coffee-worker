@@ -56,27 +56,46 @@
         .hero { height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; }
         .hero-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=2000') center/cover;
+            background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2000') center/cover;
             filter: brightness(40%);
         }
         .hero-content { position: relative; text-align: center; max-width: 900px; padding: 0 20px; }
         .hero h1 { font-size: clamp(3rem, 12vw, 7rem); font-weight: 100; letter-spacing: 0.4em; margin: 0; text-transform: uppercase; }
         .hero p { font-size: 0.85rem; letter-spacing: 0.6em; color: var(--text-main); margin-top: 30px; }
 
-        /* Concept / Philosophy Section */
-        .concept-grid { padding: 100px 5vw; display: grid; grid-template-columns: repeat(12, 1fr); gap: 40px; }
-        .concept-item { grid-column: span 4; overflow: hidden; }
-        .concept-item.wide { grid-column: span 8; }
-        .concept-item img { width: 100%; height: 55vh; object-fit: cover; border: 1px solid var(--border); transition: 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
-        .concept-item:hover img { transform: scale(1.05); }
-
-        .concept-text-block { 
-            grid-column: 2 / span 10; padding: 120px 0; text-align: left; 
-            max-width: 900px; margin: 0 auto; 
+        /* Philosophy Scroll Sections */
+        .philosophy-section {
+            padding: 150px 10vw;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8vw;
+            min-height: 80vh;
         }
-        .concept-text-block h2 { font-size: 2.5rem; font-weight: 200; letter-spacing: 0.3em; margin-bottom: 60px; text-align: center; line-height: 1.4; }
-        .concept-text-block p { color: var(--text-sub); font-size: 1.15rem; line-height: 2.6; margin-bottom: 40px; }
-        .concept-text-block strong { color: var(--text-main); font-weight: 500; border-bottom: 1px solid #444; }
+        .philosophy-section:nth-child(even) { flex-direction: row-reverse; }
+        
+        .philo-image {
+            flex: 1;
+            height: 70vh;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .philo-image img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: 2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .philosophy-section:hover .philo-image img { transform: scale(1.08); }
+
+        .philo-text {
+            flex: 1;
+            max-width: 500px;
+        }
+        .philo-text h2 {
+            font-size: 2.2rem; font-weight: 200; letter-spacing: 0.2em; margin-bottom: 30px; line-height: 1.4;
+        }
+        .philo-text p {
+            color: var(--text-sub); font-size: 1.05rem; line-height: 2.2; margin-bottom: 20px;
+        }
 
         /* Finder Section */
         .finder-container { max-width: 1000px; margin: 0 auto; padding: 120px 5vw; text-align: center; }
@@ -133,14 +152,8 @@
             .detail-layout { grid-template-columns: 1fr; }
             .detail-img { height: 50vh; }
             .gallery { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 768px) {
-            .gallery { grid-template-columns: 1fr; }
-            .result-card { flex-direction: column; }
-            .result-img { width: 100%; }
-            .concept-grid { display: block; }
-            .concept-item { margin-bottom: 30px; }
-            .hero h1 { font-size: 3rem; }
+            .philosophy-section { flex-direction: column !important; padding: 80px 5vw; gap: 40px; }
+            .philo-image { width: 100%; height: 40vh; }
         }
     </style>
 </head>
@@ -161,30 +174,23 @@
         </div>
     </nav>
 
-    <!-- 1. INDEX (Philosophy Focus) -->
+    <!-- 1. INDEX (Philosophy Focus with Visual Stimulation) -->
     <section id="index" class="page active">
         <div class="hero">
             <div class="hero-bg"></div>
             <div class="hero-content">
-                <h1>Silence</h1>
-                <p>AN ACADEMIC APPROACH TO DIALOGUE</p>
-                <div class="btn lang-target" data-ja="探索を始める" data-en="Begin Exploration" onclick="showPage('finder')" style="margin-top: 60px;">Begin Exploration</div>
+                <h1>Connection</h1>
+                <p>FINDING VALUE IN THE MARGINS</p>
+                <div class="btn lang-target" data-ja="探索を始める" data-en="Begin Exploration" onclick="showPage('finder')" style="margin-top: 60px;">探索を始める</div>
             </div>
         </div>
 
-        <div class="concept-grid">
-            <div class="concept-item"><img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=1200" alt="Vibrant Coffee"></div>
-            <div class="concept-item wide"><img src="https://images.unsplash.com/photo-1525193612562-0ec53b0e5d7c?q=80&w=2000" alt="Cafe Social"></div>
-            
-            <div class="concept-text-block">
-                <h2 class="lang-target" data-ja="コーヒー、そして言葉の余白" data-en="Coffee, and the Margin of Words"></h2>
-                <div id="index-concept-body">
-                    <!-- Dynamic Injection -->
-                </div>
-            </div>
+        <div id="philosophy-container">
+            <!-- Dynamic Sections via JS -->
+        </div>
 
-            <div class="concept-item wide"><img src="https://images.unsplash.com/photo-1524350303359-8683aa55d162?q=80&w=2000" alt="Social Interaction"></div>
-            <div class="concept-item"><img src="https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=1200" alt="People talking"></div>
+        <div style="padding: 150px 0; text-align: center;">
+            <div class="btn lang-target" data-ja="場所を探す" data-en="Find a Space" onclick="showPage('finder')">場所を探す</div>
         </div>
     </section>
 
@@ -238,7 +244,7 @@
                 </div>
                 <div class="calendar-grid" id="booking-calendar"></div>
                 <div id="booking-status" style="margin: 40px 0; font-size: 0.9rem; letter-spacing: 0.2em; color: #fff; height: 24px;"></div>
-                <div class="btn lang-target" data-ja="リクエストを送信" data-en="Send Request" onclick="confirmBooking()">Send Request</div>
+                <div class="btn lang-target" data-ja="リクエストを送信" data-en="Send Request" onclick="confirmBooking()">リクエストを送信</div>
             </div>
         </div>
     </section>
@@ -264,19 +270,25 @@
             { id: 6, name: "Harbor", owner: "Sofia", region: "melbourne", img: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?q=80&w=1200", meta: "Cross-Cultural Dock" }
         ];
 
-        const i18n = {
-            indexConcept: {
-                ja: `
-                    <p>yurucafeは、単なるカフェ紹介サイトではありません。それは<strong>「社会における静かな対話」</strong>を再定義するための学術的かつ実践的なプロジェクトです。私たちの目的は収益の最大化ではなく、多忙を極める現代社会において、人々が心の鎧を脱ぎ、自分自身の個性を安心して表現できる「サードプレイス」の可能性を探求することにあります。</p>
-                    <p>特に留学生や言語学習者にとって、新しい環境での対話は常に緊張を伴います。yurucafeでは、コーヒーを単なる飲料としてではなく、<strong>「時間を減速させ、言葉を媒介する装置」</strong>として扱います。一杯のコーヒーが提供されるまでの数分間、沈黙を許容し、差異を尊重する「ゆるやかなつながり」を生み出します。</p>
-                    <p>黒を基調としたこのプラットフォームに彩り豊かな画像が並ぶのは、沈黙の中にこそ多様な個性が鮮やかに存在していることを示すためです。私たちは契約カフェという具体的な物理空間を活用し、理論と実践を結びつけた成果を追求しています。</p>
-                `,
-                en: `
-                    <p>yurucafe is more than just a cafe directory. It is an academic and practical project aimed at redefining <strong>"silent dialogue in society."</strong> Our goal is not to maximize profit, but to explore the possibilities of a "third place" where people can let down their guard and express their individuality with peace of mind.</p>
-                    <p>For international students and language learners, interaction in a new environment often brings tension. At yurucafe, we treat coffee not just as a beverage, but as a <strong>"device to slow down time and mediate words."</strong> The minutes leading up to a serving create a "gentle connection" that respects differences.</p>
-                    <p>The vibrant images set against this black platform symbolize the brilliant individuality that exists within silence. We utilize physical partner cafes to pursue outcomes that bridge theory and practice.</p>
-                `
+        const philosophyItems = [
+            {
+                ja: { title: "鎧を脱ぐ、その場所で。", body: "社会の中で私たちは、常に「何者か」であることを求められます。yurucafeは、そんな肩書きを一度横に置いて、ただの自分に戻れるサードプレイスを目指しています。" },
+                en: { title: "Unmasking yourself.", body: "Society constantly demands us to be 'someone.' yurucafe aims to be a 'third place' where you can set aside your titles and return to your true self." },
+                img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1200"
             },
+            {
+                ja: { title: "沈黙は、対話の一部。", body: "沈黙は気まずいものではありません。言葉が途切れたその瞬間にこそ、相手の存在を深く感じる時間が流れています。私たちはその「余白」を大切にしています。" },
+                en: { title: "Silence as Dialogue.", body: "Silence is not awkward. In the moments when words cease, there is a time to deeply feel the presence of the other. We cherish those margins." },
+                img: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=1200"
+            },
+            {
+                ja: { title: "コーヒーが、時間を減速させる。", body: "丁寧に淹れられた一杯のコーヒー。その香りが広がるまでの数分間が、あなたの呼吸を整え、心を対話へと向かわせてくれるはずです。" },
+                en: { title: "Coffee Slows Time.", body: "A meticulously brewed cup of coffee. The minutes until its aroma spreads will steady your breathing and prepare your heart for dialogue." },
+                img: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=1200"
+            }
+        ];
+
+        const i18n = {
             archiveDesc: { ja: "yurucafeの思想に共鳴し、対話の実験場として機能する契約空間。モノトーンの世界を鮮やかに彩る個性に触れてください。", en: "Partner spaces functioning as experimental fields for dialogue. Encounter the personalities that color the monotone world." },
             bookingDesc: { ja: "対話イベントへの参加予約。カレンダーから希望日を選択してください。", en: "Reservation for dialogue events. Please select your preferred date." },
             finderHint: { ja: "カレンダーから日付を選んでください", en: "Please select a date from the calendar" }
@@ -287,21 +299,35 @@
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${lang}`).classList.add('active');
             
-            // Standard target translation
             document.querySelectorAll('.lang-target').forEach(el => { if (el.dataset[lang]) el.innerText = el.dataset[lang]; });
             
-            // Complex block translation
-            document.getElementById('index-concept-body').innerHTML = i18n.indexConcept[lang];
+            // Re-render philosophy section
+            renderPhilosophy();
+            
             document.getElementById('archive-description').innerText = i18n.archiveDesc[lang];
             document.getElementById('booking-description').innerText = i18n.bookingDesc[lang];
             document.getElementById('finder-hint').innerText = i18n.finderHint[lang];
 
-            // Re-render components that depend on lang
             const activePage = document.querySelector('.page.active');
             if (activePage.id === 'cafe') {
                 const cid = activePage.dataset.cafeId;
                 if(cid) renderDetail(parseInt(cid));
             }
+        }
+
+        function renderPhilosophy() {
+            const container = document.getElementById('philosophy-container');
+            container.innerHTML = philosophyItems.map(item => `
+                <div class="philosophy-section">
+                    <div class="philo-image">
+                        <img src="${item.img}" alt="Concept Image">
+                    </div>
+                    <div class="philo-text">
+                        <h2>${item[currentLang].title}</h2>
+                        <p>${item[currentLang].body}</p>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function generateCalendar(containerId, callback) {
@@ -341,7 +367,6 @@
             if(!selectedDateFinder) return;
             const region = document.getElementById('region-select').value;
             const resultsDiv = document.getElementById('search-results');
-            // Matching logic: simple day-based match for demo
             const filtered = cafes.filter(c => c.region === region && (selectedDateFinder % 2 === c.id % 2));
             
             const recLabel = currentLang === 'ja' ? 'おすすめの場所' : 'RECOMMENDED SPACE';
