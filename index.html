@@ -1,104 +1,113 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAFE - Silence & Space</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE SPACE - Premium Cafe Project</title>
     <style>
-        :root { --bg: #0a0a0a; --accent: #c5a059; --text-muted: rgba(255,255,255,0.6); }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; line-height: 1.6; }
+        :root { --accent: #c5a059; --bg: #0a0a0a; --card-bg: #111; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: sans-serif; scroll-behavior: smooth; }
         
-        /* 1. Hero Section */
-        .hero {
-            height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                        url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?q=80&w=2000') center/cover no-repeat;
+        /* ページ切り替えの仕組み */
+        .page { display: none; min-height: 100vh; animation: fadeIn 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* 共通ボタン */
+        .btn { display: inline-block; padding: 15px 40px; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; cursor: pointer; background: transparent; transition: 0.3s; margin-top: 20px; font-size: 1rem; }
+        .btn:hover { background: var(--accent); color: #000; }
+
+        /* 1. トップページ (HOME) */
+        #home { 
+            height: 100vh; background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?q=80&w=2000') center/cover;
             display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
         }
-        .hero h1 { font-size: clamp(3rem, 12vw, 7rem); font-weight: 100; letter-spacing: 0.5em; margin: 0; text-transform: uppercase; }
-        .hero p { font-size: 1rem; letter-spacing: 1em; color: var(--accent); margin-top: 20px; }
+        #home h1 { font-size: clamp(3rem, 10vw, 6rem); font-weight: 100; letter-spacing: 0.3em; margin: 0; }
 
-        /* Common Layout */
-        section { padding: 120px 5vw; max-width: 1400px; margin: 0 auto; }
-        .section-title { font-size: 0.8rem; letter-spacing: 0.5em; color: var(--accent); text-align: center; margin-bottom: 60px; text-transform: uppercase; }
+        /* 2. 店舗一覧 (CAFES) */
+        .container { padding: 80px 5vw; max-width: 1200px; margin: 0 auto; text-align: center; }
+        .section-title { font-size: 0.8rem; letter-spacing: 0.5em; color: var(--accent); margin-bottom: 50px; text-transform: uppercase; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: var(--card-bg); border: 1px solid #222; text-align: left; cursor: pointer; transition: 0.3s; }
+        .card:hover { border-color: var(--accent); }
+        .card-img { height: 250px; background: center/cover; }
+        .card-info { padding: 25px; }
 
-        /* 2. Gallery Section */
-        .gallery { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
-        .img-box { overflow: hidden; background: #1a1a1a; position: relative; }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 1.2s cubic-bezier(0.2, 1, 0.3, 1); opacity: 0.8; }
-        .img-box:hover img { transform: scale(1.08); opacity: 1; }
-        
-        .tall { grid-column: span 5; height: 70vh; }
-        .wide { grid-column: span 7; height: 40vh; }
-        .square { grid-column: span 4; height: 40vh; }
-        .center { grid-column: 3 / span 8; height: 60vh; }
+        /* 3. 店舗詳細 (DETAIL) */
+        .detail-hero { height: 50vh; background: center/cover; }
+        .story-box { padding: 60px 10%; line-height: 2; font-weight: 200; font-size: 1.2rem; }
 
-        /* 3. Menu Section */
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; padding: 0 10%; }
-        .menu-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 15px 0; display: flex; justify-content: space-between; align-items: baseline; }
-        .menu-name { font-weight: 200; letter-spacing: 0.1em; }
-        .menu-price { font-size: 0.9rem; color: var(--accent); }
+        /* 4. 予約 (BOOKING) */
+        .booking-form { max-width: 400px; margin: 40px auto; padding: 40px; background: var(--card-bg); border: 1px solid var(--accent); }
+        input { width: 100%; padding: 15px; margin: 20px 0; background: #000; border: 1px solid #333; color: #fff; box-sizing: border-box; }
 
-        /* 4. Access Section */
-        .access-info { text-align: center; font-weight: 200; letter-spacing: 0.1em; line-height: 2.5; }
-        .map-placeholder { width: 100%; height: 400px; background: #111; margin-top: 40px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
-
-        /* Footer */
-        footer { padding: 60px; text-align: center; font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.2em; border-top: 1px solid rgba(255,255,255,0.05); }
-
-        @media (max-width: 768px) {
-            .gallery, .menu-grid { display: block; }
-            .img-box { width: 100%; height: 50vh; margin-bottom: 20px; }
-            .menu-item { margin-bottom: 10px; }
-        }
+        nav { position: fixed; top: 20px; right: 20px; z-index: 100; }
+        nav a { color: #fff; text-decoration: none; font-size: 0.8rem; letter-spacing: 0.2em; margin-left: 20px; opacity: 0.7; }
+        nav a:hover { opacity: 1; color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <div class="hero">
+    <nav>
+        <a href="#" onclick="showPage('home')">HOME</a>
+        <a href="#" onclick="showPage('cafes')">CAFES</a>
+    </nav>
+
+    <section id="home" class="page active">
         <h1>Silence</h1>
-        <p>TIME AND SPACE</p>
-    </div>
+        <p style="letter-spacing: 0.5em; color: var(--accent);">PREMIUM CAFE PROJECT</p>
+        <button class="btn" onclick="showPage('cafes')">カフェを探す</button>
+    </section>
 
-    <section id="space">
-        <div class="section-title">The Space</div>
-        <div class="gallery">
-            <div class="img-box tall"><img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=1200"></div>
-            <div class="img-box wide"><img src="https://images.unsplash.com/photo-1507133750040-4a8f57021571?q=80&w=1200"></div>
-            <div class="img-box square"><img src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?q=80&w=800"></div>
-            <div class="img-box center"><img src="https://images.unsplash.com/photo-1525610553991-2bede1a236e2?q=80&w=1200"></div>
+    <section id="cafes" class="page">
+        <div class="container">
+            <h2 class="section-title">Our Locations</h2>
+            <div class="card-grid">
+                <div class="card" onclick="showPage('detail')">
+                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800')"></div>
+                    <div class="card-info">
+                        <h3>Jinnan Base</h3>
+                        <p>光とコンクリートが織りなす静寂の空間。</p>
+                    </div>
+                </div>
+                </div>
         </div>
     </section>
 
-    <section id="menu">
-        <div class="section-title">Menu</div>
-        <div class="menu-grid">
-            <div class="menu-column">
-                <div class="menu-item"><span class="menu-name">Hand Drip Coffee</span><span class="menu-price">¥650</span></div>
-                <div class="menu-item"><span class="menu-name">Cold Brew</span><span class="menu-price">¥700</span></div>
-                <div class="menu-item"><span class="menu-name">Cafe Latte</span><span class="menu-price">¥750</span></div>
+    <section id="detail" class="page">
+        <div class="detail-hero" style="background-image: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1200')"></div>
+        <div class="container">
+            <h2 class="section-title">Store Identity</h2>
+            <div class="story-box">
+                <p>この場所にあるのは、厳選された豆と、思考を止めるための静寂です。<br>店主がこだわり抜いたインテリアが、あなたを日常から切り離します。</p>
+                <button class="btn" onclick="showPage('booking')">この場所を予約する</button>
             </div>
-            <div class="menu-column">
-                <div class="menu-item"><span class="menu-name">Seasonal Tart</span><span class="menu-price">¥800</span></div>
-                <div class="menu-item"><span class="menu-name">Gateau Chocolat</span><span class="menu-price">¥750</span></div>
-                <div class="menu-item"><span class="menu-name">Scone (2pcs)</span><span class="menu-price">¥600</span></div>
+        </div>
+    </section>
+
+    <section id="booking" class="page">
+        <div class="container">
+            <h2 class="section-title">Reservation</h2>
+            <div class="booking-form">
+                <p>ご希望の日付を選択してください</p>
+                <input type="date">
+                <button class="btn" onclick="alert('予約が完了しました')">予約を確定する</button>
             </div>
+            <button class="btn" style="border:none;" onclick="showPage('cafes')">← 一覧に戻る</button>
         </div>
     </section>
 
-    <section id="access">
-        <div class="section-title">Access</div>
-        <div class="access-info">
-            <p>東京都渋谷区神南 0-0-0<br>
-            Open: 11:00 - 19:00 (L.O 18:30)<br>
-            Closed: Tuesday</p>
-        </div>
-        <div class="map-placeholder">Google Map Will Be Here</div>
-    </section>
-
-    <footer>
-        &copy; 2025 THE SANCTUARY CAFE.
-    </footer>
-
+    <script>
+        function showPage(pageId) {
+            // すべてのページを非表示にする
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // 指定したページだけ表示する
+            document.getElementById(pageId).classList.add('active');
+            
+            // ページトップにスクロール
+            window.scrollTo(0, 0);
+        }
+    </script>
 </body>
 </html>
