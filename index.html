@@ -6,107 +6,141 @@
     <title>yurucafe | ゆるやかな対話の場</title>
     <style>
         :root {
-            --primary: #5d4037; /* コーヒーブラウン */
-            --accent: #a1887f;  /* 柔らかなラテ色 */
-            --bg: #fdfaf5;      /* 温かみのある和紙のような白 */
-            --text: #3e2723;
-            --card-bg: #fff;
+            --accent: #c5a059; /* ゴールド・アンバー（コーヒーの色） */
+            --bg: #0a0a0a;     /* 深い夜、静かな空間 */
+            --text-muted: rgba(255,255,255,0.5);
+            --card-border: rgba(197, 160, 89, 0.2);
         }
 
         body, html {
-            margin: 0; padding: 0; background-color: var(--bg); color: var(--text);
-            font-family: "Helvetica Neue", Arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-            line-height: 1.7; scroll-behavior: smooth;
+            margin: 0; padding: 0; background-color: var(--bg); color: #fff;
+            font-family: "Helvetica Neue", Arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
+            line-height: 1.8; overflow-x: hidden;
         }
 
-        /* ページ切り替えアニメーション */
-        .page { display: none; min-height: 100vh; animation: fadeIn 0.6s ease-out; }
+        /* 画面遷移アニメーション */
+        .page { display: none; min-height: 100vh; animation: pageFocus 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pageFocus { 
+            from { opacity: 0; filter: blur(10px); transform: scale(1.02); } 
+            to { opacity: 1; filter: blur(0); transform: scale(1); } 
+        }
 
-        /* ナビゲーション */
+        /* Navigation */
         nav {
-            position: fixed; top: 0; width: 100%; height: 60px;
-            background: rgba(253, 250, 245, 0.9); backdrop-filter: blur(5px);
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
+            position: fixed; top: 0; width: 100%; padding: 40px 6vw;
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+            box-sizing: border-box; background: linear-gradient(to bottom, var(--bg), transparent);
         }
-        nav span { margin: 0 20px; font-size: 0.9rem; cursor: pointer; letter-spacing: 0.1em; font-weight: bold; color: var(--primary); }
+        .logo { font-size: 1.1rem; letter-spacing: 0.5em; font-weight: 100; cursor: pointer; }
+        .nav-links span { margin-left: 40px; font-size: 0.75rem; letter-spacing: 0.2em; cursor: pointer; transition: 0.4s; opacity: 0.5; }
+        .nav-links span:hover { opacity: 1; color: var(--accent); }
 
-        /* 共通ボタン */
+        /* Button Architecture */
         .btn {
-            display: inline-block; padding: 12px 35px; background: var(--primary); color: #fff;
-            text-decoration: none; border-radius: 4px; cursor: pointer; transition: 0.3s;
-            border: none; font-size: 1rem; margin-top: 20px;
+            display: inline-block; padding: 22px 60px; border: 1px solid var(--accent);
+            color: var(--accent); text-decoration: none; cursor: pointer;
+            transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); font-size: 0.85rem; letter-spacing: 0.3em; margin-top: 40px;
+            background: transparent;
         }
-        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+        .btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px rgba(197, 160, 89, 0.3); }
 
-        /* 1. index (Hero) */
-        #index { text-align: center; }
+        /* 1. INDEX (Hero) */
         .hero {
-            height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: linear-gradient(rgba(253, 250, 245, 0.7), rgba(253, 250, 245, 0.7)),
-                        url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2000') center/cover;
-            padding: 0 20px;
+            height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                        url('https://images.unsplash.com/photo-1507133750040-4a8f57021571?q=80&w=2000') center/cover no-repeat;
+            text-align: center; padding: 0 20px;
         }
-        .hero h1 { font-size: 3.5rem; color: var(--primary); margin: 0; font-weight: 300; letter-spacing: 0.2em; }
-        .hero p { font-size: 1.1rem; max-width: 600px; margin: 20px auto; color: var(--text); font-weight: 400; }
+        .hero h1 { font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 100; letter-spacing: 0.6em; margin: 0; text-transform: uppercase; }
+        .hero p { font-size: 0.9rem; letter-spacing: 0.5em; color: var(--accent); margin-top: 25px; font-weight: 200; }
 
-        /* 2. cafes (一覧) */
-        .container { padding: 80px 5vw; max-width: 1100px; margin: 0 auto; }
-        .section-title { text-align: center; margin-bottom: 40px; }
-        .section-title h2 { font-weight: 300; letter-spacing: 0.2em; color: var(--primary); }
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; border: 1px solid #eee; }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .card-img { height: 200px; background: center/cover; }
-        .card-body { padding: 20px; }
-        .card-body h3 { margin: 0 0 10px 0; color: var(--primary); }
+        .concept-text { padding: 15vh 10vw; text-align: center; max-width: 800px; margin: 0 auto; }
+        .concept-text h2 { font-weight: 100; letter-spacing: 0.3em; font-size: 1.8rem; margin-bottom: 50px; }
+        .concept-text p { font-size: 1rem; font-weight: 200; color: #ccc; line-height: 2.8; }
 
-        /* 3. cafe (詳細) */
-        .cafe-detail-header { height: 40vh; background: center/cover; }
-        .story-section { padding: 40px 0; border-bottom: 1px solid #eee; }
-        .video-placeholder { width: 100%; aspect-ratio: 16/9; background: #ddd; margin: 30px 0; display: flex; align-items: center; justify-content: center; color: #777; font-style: italic; }
+        /* 2. CAFES (Architecture Gallery) */
+        .container { padding: 120px 6vw; max-width: 1400px; margin: 0 auto; }
+        .gallery { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3vw; }
+        .card { 
+            grid-column: span 6; position: relative; overflow: hidden; height: 65vh; 
+            border: 1px solid var(--card-border); cursor: pointer; transition: 0.6s;
+        }
+        .card:nth-child(even) { transform: translateY(12vh); }
+        .card-img { width: 100%; height: 100%; background: center/cover; opacity: 0.4; transition: 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
+        .card:hover .card-img { opacity: 0.8; transform: scale(1.05); }
+        .card-overlay { position: absolute; bottom: 50px; left: 50px; text-align: left; }
+        .card-overlay h3 { font-size: 1.8rem; font-weight: 100; letter-spacing: 0.2em; margin: 0; }
+        .card-overlay p { font-size: 0.7rem; color: var(--accent); letter-spacing: 0.3em; margin-top: 10px; text-transform: uppercase; }
 
-        /* 4. booking (予約) */
-        .calendar-ui { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; max-width: 400px; margin: 30px auto; border: 1px solid #eee; padding: 10px; background: #fff; }
-        .cal-day { padding: 15px 5px; cursor: pointer; border: 1px solid #fafafa; font-size: 0.9rem; }
-        .cal-day:hover { background: var(--accent); color: #fff; }
-        .cal-day.selected { background: var(--primary); color: #fff; }
-        .cal-header { font-weight: bold; background: #f0f0f0; }
+        /* 3. CAFE DETAIL (Story Focus) */
+        .detail-header { height: 60vh; background: center/cover; position: relative; }
+        .detail-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, var(--bg), transparent); }
+        .story-container { padding: 80px 10vw; max-width: 900px; margin: 0 auto; text-align: left; }
+        .owner-name { font-size: 0.8rem; color: var(--accent); letter-spacing: 0.4em; margin-bottom: 10px; display: block; }
+        .story-content h2 { font-size: 2.5rem; font-weight: 100; letter-spacing: 0.2em; margin-bottom: 60px; }
+        .story-content p { font-size: 1.1rem; color: #bbb; line-height: 2.4; margin-bottom: 40px; }
+        .video-placeholder { 
+            width: 100%; aspect-ratio: 16/9; background: #111; border: 1px solid var(--card-border);
+            display: flex; align-items: center; justify-content: center; color: var(--accent);
+            letter-spacing: 0.5em; font-size: 0.75rem; margin: 60px 0;
+        }
 
-        footer { text-align: center; padding: 40px; font-size: 0.8rem; color: var(--accent); }
+        /* 4. BOOKING (Minimalist Calendar) */
+        .booking-ui { max-width: 500px; margin: 0 auto; padding: 60px; border: 1px solid var(--card-border); text-align: center; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin: 40px 0; }
+        .cal-item { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; border: 1px solid transparent; transition: 0.3s; color: var(--text-muted); }
+        .cal-item:hover { color: var(--accent); border-color: var(--card-border); }
+        .cal-item.selected { background: var(--accent); color: #000; border-color: var(--accent); }
+        .cal-label { font-size: 0.6rem; letter-spacing: 0.1em; opacity: 0.3; margin-bottom: 15px; }
+
+        footer { padding: 100px 0; text-align: center; font-size: 0.6rem; letter-spacing: 0.5em; opacity: 0.3; font-weight: 100; }
+
+        @media (max-width: 768px) {
+            .gallery { display: block; }
+            .card { width: 100%; height: 55vh; margin-bottom: 40px !important; transform: none !important; }
+            .hero h1 { font-size: 2.8rem; }
+            .story-container { padding: 60px 5vw; }
+        }
     </style>
 </head>
 <body>
 
     <nav>
-        <span onclick="showPage('index')">yurucafe</span>
-        <span onclick="showPage('cafes')">店舗一覧</span>
-        <span onclick="showPage('booking')">予約体験</span>
+        <div class="logo" onclick="showPage('index')">YURUCAFE</div>
+        <div class="nav-links">
+            <span onclick="showPage('cafes')">CAFES</span>
+            <span onclick="showPage('booking')">RESERVE</span>
+        </div>
     </nav>
 
     <section id="index" class="page active">
         <div class="hero">
-            <h1>yurucafe</h1>
-            <p>コーヒーを片手に、心がほぐれる対話を。<br>
-               留学生と地域がつながり、個性を認め合える場所。</p>
-            <div class="btn" onclick="showPage('cafes')">カフェを探す</div>
+            <h1>Silence</h1>
+            <p>Dialogue through Coffee</p>
+            <div class="btn" onclick="showPage('cafes')">Explore the Space</div>
         </div>
-        <div class="container" style="text-align: left;">
-            <div class="section-title"><h2>Concept</h2></div>
-            <p>忙しい日常の中で、自分の個性を表現してもいい場所はありますか？<br>
-            yurucafeは、学術的な探究と実践を組み合わせた「対話の実験場」です。<br>
-            コーヒーが生み出すゆったりとした時間の中で、異文化や個人の背景に触れ、静かな感動を共有しましょう。</p>
+        <div class="concept-text">
+            <h2>ゆるやかな対話の場</h2>
+            <p>
+                忙しい学校生活や社会生活の中で、<br>
+                一度立ち止まり、コーヒーの香りに身を委ねる。<br><br>
+                そこにあるのは、留学生も、言葉を学ぶ人も、<br>
+                誰もが自分らしくあれる静かな空間です。<br><br>
+                「個性を表現してもいい」という安心感とともに、<br>
+                他者の背景に触れる感動を、ここで。
+            </p>
+            <div class="btn" style="padding: 15px 40px; font-size: 0.7rem;" onclick="showPage('cafes')">店舗一覧を見る</div>
         </div>
     </section>
 
     <section id="cafes" class="page">
         <div class="container">
-            <div class="section-title">
-                <h2>Our Partner Cafes</h2>
-                <p>対話を受け入れてくれる、温かな空間たち</p>
+            <div class="section-title" style="text-align: center; margin-bottom: 100px;">
+                <p style="letter-spacing: 0.8em; color: var(--accent); font-size: 0.7rem;">PARTNER CAFES</p>
+                <h2 style="font-weight: 100; letter-spacing: 0.4em; font-size: 2rem;">扉をひらく</h2>
             </div>
-            <div class="card-grid" id="cafe-list">
+            <div class="gallery" id="cafe-list">
                 </div>
         </div>
     </section>
@@ -117,102 +151,86 @@
     </section>
 
     <section id="booking" class="page">
-        <div class="container" style="text-align: center;">
-            <div class="section-title"><h2>Reservation</h2></div>
-            <p>対話イベントへの参加予約（疑似体験）</p>
-            <div class="calendar-ui" id="calendar">
-                </div>
-            <p id="selected-date-text">日付を選択してください</p>
-            <button class="btn" onclick="confirmBooking()">予約する</button>
+        <div class="container">
+            <div class="booking-ui">
+                <p style="font-size: 0.75rem; letter-spacing: 0.4em; color: var(--accent); margin-bottom: 30px;">RESERVATION</p>
+                <h2 style="font-weight: 100; letter-spacing: 0.2em; margin-bottom: 40px;">対話を予約する</h2>
+                <div class="calendar-grid" id="calendar">
+                    </div>
+                <div id="booking-message" style="font-size: 0.7rem; color: var(--accent); height: 20px; margin-bottom: 20px;"></div>
+                <div class="btn" style="width: 100%; box-sizing: border-box;" onclick="submitBooking()">予約リクエストを送信</div>
+            </div>
         </div>
     </section>
 
-    <footer>
-        &copy; 2025 yurucafe.org - 実践的活動の成果物として
-    </footer>
+    <footer>&copy; 2025 YURUCAFE.ORG - ACADEMIC PROJECT</footer>
 
     <script>
-        // データの定義
+        // MVP Data: 6架空カフェ
         const cafes = [
-            { id: 1, name: "灯（あかり）", owner: "ケン", desc: "木の温もりに包まれる空間。", img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800" },
-            { id: 2, name: "静寂の森", owner: "ミナ", desc: "読書と対話のための静かな場所。", img: "https://images.unsplash.com/photo-1559925393-8be0ec418cd9?q=80&w=800" },
-            { id: 3, name: "繋（つなぐ）", owner: "レオ", desc: "留学生が集まる国際交流の拠点。", img: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?q=80&w=800" },
-            { id: 4, name: "Canvas", owner: "アイ", desc: "個性を表現する、アートなカフェ。", img: "https://images.unsplash.com/photo-1507133750040-4a8f57021571?q=80&w=800" },
-            { id: 5, name: "風の音", owner: "ハル", desc: "自然光が差し込む、開放的なテラス。", img: "https://images.unsplash.com/photo-1445116572660-236099ec97a0?q=80&w=800" },
-            { id: 6, name: "Roots", owner: "タカ", desc: "コーヒーの本質を追求するラボ。", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800" }
+            { id: 1, name: "灯 - Akari", owner: "Haruki", img: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=1200", desc: "木の温もりに包まれる空間。" },
+            { id: 2, name: "Nest", owner: "Mina", img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1200", desc: "都会の喧騒を忘れる隠れ家。" },
+            { id: 3, name: "Canvas", owner: "Leo", img: "https://images.unsplash.com/photo-1559925393-8be0ec418cd9?q=80&w=1200", desc: "個性を表現する、真っ白な場所。" },
+            { id: 4, name: "Roots", owner: "Elena", img: "https://images.unsplash.com/photo-1521017432531-fbd92d74426b?q=80&w=1200", desc: "コーヒーの本質を追求する空間。" },
+            { id: 5, name: "Silence", owner: "Ken", img: "https://images.unsplash.com/photo-1453614512568-c4024d13c247?q=80&w=1200", desc: "言葉を必要としない静寂。" },
+            { id: 6, name: "Harbor", owner: "Sofia", img: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?q=80&w=1200", desc: "世界中の物語が集まる港。" }
         ];
 
-        // ページ切り替え
         function showPage(pageId, cafeId = null) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            const target = document.getElementById(pageId);
+            target.classList.add('active');
             window.scrollTo(0, 0);
 
             if (pageId === 'cafes') renderCafes();
-            if (pageId === 'cafe' && cafeId) renderCafeDetail(cafeId);
+            if (pageId === 'cafe' && cafeId) renderDetail(cafeId);
             if (pageId === 'booking') renderCalendar();
         }
 
-        // カフェ一覧の描画
         function renderCafes() {
             const list = document.getElementById('cafe-list');
             list.innerHTML = cafes.map(c => `
                 <div class="card" onclick="showPage('cafe', ${c.id})">
                     <div class="card-img" style="background-image: url('${c.img}')"></div>
-                    <div class="card-body">
+                    <div class="card-overlay">
+                        <p>Owner: ${c.owner}</p>
                         <h3>${c.name}</h3>
-                        <p>${c.desc}</p>
-                        <small>店主：${c.owner}</small>
                     </div>
                 </div>
             `).join('');
         }
 
-        // カフェ詳細の描画
-        function renderCafeDetail(id) {
-            const cafe = cafes.find(c => c.id === id);
+        function renderDetail(id) {
+            const c = cafes.find(x => x.id === id);
             const content = document.getElementById('cafe-detail-content');
             content.innerHTML = `
-                <div class="cafe-detail-header" style="background-image: url('${cafe.img}')"></div>
-                <div class="container">
-                    <h1>${cafe.name}</h1>
-                    <p style="color:var(--accent)">店主：${cafe.owner}（気軽にそう呼んでください）</p>
-                    
-                    <div class="story-section">
-                        <h3>コーヒーへのこだわり</h3>
-                        <p>このお店では、一杯のコーヒーを淹れる時間を「会話の準備期間」と考えています。豆の香りが広がるまでの数分間、少しだけスマホを置いて、周りの空気を感じてみてください。</p>
-                    </div>
-
-                    <div class="story-section">
-                        <h3>対話の場としての魅力</h3>
-                        <p>ここでは、言葉が上手である必要はありません。留学生の方も、言語学習中の方も、コーヒーを媒介にして「正直な会話」ができるような、そんな安心感を大切にしています。</p>
-                        <div class="video-placeholder">[ ここに店内の雰囲気動画（1〜2分）が流れます ]</div>
-                    </div>
-
-                    <div style="text-align:center; padding: 40px 0;">
-                        <div class="btn" onclick="showPage('booking')">対話イベントを予約する</div>
+                <div class="detail-header" style="background-image: url('${c.img}')"></div>
+                <div class="story-container">
+                    <div class="story-content">
+                        <span class="owner-name">Owner / ${c.owner}</span>
+                        <h2>${c.name}</h2>
+                        <p>コーヒーは単なる飲み物ではなく、人の時間をゆっくりにし、正直な会話を生むための「媒介」です。ここでは、誰もが自分の言葉で、自分のペースで話をすることができます。</p>
+                        <p>${c.desc} この場所には、あなたの個性を否定する人はいません。コーヒーの香りと共に、ゆるやかな対話をお楽しみください。</p>
+                        <div class="video-placeholder">ATMOSPHERE MOVIE (1-2min)</div>
+                        <div class="btn" onclick="showPage('booking')">対話の予約をする</div>
                     </div>
                 </div>
             `;
         }
 
-        // カレンダーの描画
         function renderCalendar() {
             const cal = document.getElementById('calendar');
-            let html = ['日','月','火','水','木','金','土'].map(d => `<div class="cal-day cal-header">${d}</div>`).join('');
-            for(let i=1; i<=28; i++) {
-                html += `<div class="cal-day" onclick="selectDate(this, ${i})">${i}</div>`;
-            }
-            cal.innerHTML = html;
+            const days = Array.from({length: 21}, (_, i) => i + 10); // Dummy dates
+            cal.innerHTML = days.map(d => `<div class="cal-item" onclick="selectDate(this, ${d})">${d}</div>`).join('');
         }
 
-        function selectDate(el, day) {
-            document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('selected'));
+        function selectDate(el, d) {
+            document.querySelectorAll('.cal-item').forEach(i => i.classList.remove('selected'));
             el.classList.add('selected');
-            document.getElementById('selected-date-text').innerText = `2025年12月${day}日が選択されています`;
+            document.getElementById('booking-message').innerText = `${d}日を選択しました`;
         }
 
-        function confirmBooking() {
+        function submitBooking() {
             alert("予約リクエストを受け付けました。後ほどご連絡します。");
         }
     </script>
