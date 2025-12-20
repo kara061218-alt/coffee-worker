@@ -3,183 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>yurucafe | ゆるやかな対話の場</title>
+    <title>yurucafe | The Academic & Social Practice</title>
     <style>
         :root {
-            --accent: #c5a059; /* ゴールド・アンバー（コーヒーの色） */
-            --bg: #0a0a0a;     /* 深い夜、静かな空間 */
-            --text-muted: rgba(255,255,255,0.5);
-            --card-border: rgba(197, 160, 89, 0.2);
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --border: #1a1a1a;
+            --text-main: #ffffff;
+            --text-sub: #888888;
+            --accent: #ffffff;
         }
 
         body, html {
-            margin: 0; padding: 0; background-color: var(--bg); color: #fff;
-            font-family: "Helvetica Neue", Arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
-            line-height: 1.8; overflow-x: hidden;
+            margin: 0; padding: 0; background-color: var(--bg); color: var(--text-main);
+            font-family: "Inter", "Helvetica Neue", Arial, "Hiragino Sans", sans-serif;
+            font-weight: 200; line-height: 1.6; overflow-x: hidden;
         }
 
-        /* 画面遷移アニメーション */
-        .page { display: none; min-height: 100vh; animation: pageFocus 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* ページ切り替え */
+        .page { display: none; min-height: 100vh; animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
         .page.active { display: block; }
-        @keyframes pageFocus { 
-            from { opacity: 0; filter: blur(10px); transform: scale(1.02); } 
-            to { opacity: 1; filter: blur(0); transform: scale(1); } 
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* Navigation */
         nav {
-            position: fixed; top: 0; width: 100%; padding: 40px 6vw;
+            position: fixed; top: 0; width: 100%; padding: 40px 5vw;
             display: flex; justify-content: space-between; align-items: center; z-index: 1000;
-            box-sizing: border-box; background: linear-gradient(to bottom, var(--bg), transparent);
+            mix-blend-mode: difference;
         }
-        .logo { font-size: 1.1rem; letter-spacing: 0.5em; font-weight: 100; cursor: pointer; }
-        .nav-links span { margin-left: 40px; font-size: 0.75rem; letter-spacing: 0.2em; cursor: pointer; transition: 0.4s; opacity: 0.5; }
-        .nav-links span:hover { opacity: 1; color: var(--accent); }
+        .logo { font-size: 0.9rem; letter-spacing: 0.6em; cursor: pointer; font-weight: 400; }
+        .nav-links span { margin-left: 40px; font-size: 0.65rem; letter-spacing: 0.3em; cursor: pointer; opacity: 0.5; transition: 0.4s; }
+        .nav-links span:hover { opacity: 1; }
 
         /* Button Architecture */
         .btn {
-            display: inline-block; padding: 22px 60px; border: 1px solid var(--accent);
-            color: var(--accent); text-decoration: none; cursor: pointer;
-            transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); font-size: 0.85rem; letter-spacing: 0.3em; margin-top: 40px;
-            background: transparent;
+            display: inline-block; padding: 18px 50px; border: 1px solid #333;
+            color: #fff; text-decoration: none; cursor: pointer;
+            transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1); font-size: 0.75rem; letter-spacing: 0.4em;
+            background: transparent; text-transform: uppercase;
         }
-        .btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px rgba(197, 160, 89, 0.3); }
+        .btn:hover { border-color: #fff; background: #fff; color: #000; }
 
-        /* 1. INDEX (Hero) */
+        /* 1. HERO (Academic Intro) */
         .hero {
-            height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-                        url('https://images.unsplash.com/photo-1507133750040-4a8f57021571?q=80&w=2000') center/cover no-repeat;
-            text-align: center; padding: 0 20px;
+            height: 100vh; position: relative; display: flex; align-items: center; justify-content: center;
         }
-        .hero h1 { font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 100; letter-spacing: 0.6em; margin: 0; text-transform: uppercase; }
-        .hero p { font-size: 0.9rem; letter-spacing: 0.5em; color: var(--accent); margin-top: 25px; font-weight: 200; }
-
-        .concept-text { padding: 15vh 10vw; text-align: center; max-width: 800px; margin: 0 auto; }
-        .concept-text h2 { font-weight: 100; letter-spacing: 0.3em; font-size: 1.8rem; margin-bottom: 50px; }
-        .concept-text p { font-size: 1rem; font-weight: 200; color: #ccc; line-height: 2.8; }
-
-        /* 2. CAFES (Architecture Gallery) */
-        .container { padding: 120px 6vw; max-width: 1400px; margin: 0 auto; }
-        .gallery { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3vw; }
-        .card { 
-            grid-column: span 6; position: relative; overflow: hidden; height: 65vh; 
-            border: 1px solid var(--card-border); cursor: pointer; transition: 0.6s;
+        .hero-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2000') center/cover;
+            filter: grayscale(100%) brightness(40%);
         }
-        .card:nth-child(even) { transform: translateY(12vh); }
-        .card-img { width: 100%; height: 100%; background: center/cover; opacity: 0.4; transition: 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
-        .card:hover .card-img { opacity: 0.8; transform: scale(1.05); }
-        .card-overlay { position: absolute; bottom: 50px; left: 50px; text-align: left; }
-        .card-overlay h3 { font-size: 1.8rem; font-weight: 100; letter-spacing: 0.2em; margin: 0; }
-        .card-overlay p { font-size: 0.7rem; color: var(--accent); letter-spacing: 0.3em; margin-top: 10px; text-transform: uppercase; }
+        .hero-content { position: relative; text-align: center; }
+        .hero h1 { font-size: clamp(3rem, 15vw, 8rem); font-weight: 100; letter-spacing: 0.4em; margin: 0; text-transform: uppercase; }
+        .hero p { font-size: 0.7rem; letter-spacing: 0.8em; color: var(--text-sub); margin-top: 30px; }
 
-        /* 3. CAFE DETAIL (Story Focus) */
-        .detail-header { height: 60vh; background: center/cover; position: relative; }
-        .detail-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, var(--bg), transparent); }
-        .story-container { padding: 80px 10vw; max-width: 900px; margin: 0 auto; text-align: left; }
-        .owner-name { font-size: 0.8rem; color: var(--accent); letter-spacing: 0.4em; margin-bottom: 10px; display: block; }
-        .story-content h2 { font-size: 2.5rem; font-weight: 100; letter-spacing: 0.2em; margin-bottom: 60px; }
-        .story-content p { font-size: 1.1rem; color: #bbb; line-height: 2.4; margin-bottom: 40px; }
-        .video-placeholder { 
-            width: 100%; aspect-ratio: 16/9; background: #111; border: 1px solid var(--card-border);
-            display: flex; align-items: center; justify-content: center; color: var(--accent);
-            letter-spacing: 0.5em; font-size: 0.75rem; margin: 60px 0;
+        /* Multi-Image Concept Grid */
+        .concept-grid {
+            padding: 150px 5vw; display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px;
         }
+        .concept-item { grid-column: span 4; position: relative; }
+        .concept-item.wide { grid-column: span 8; }
+        .concept-item img { width: 100%; height: 50vh; object-fit: cover; filter: grayscale(100%) contrast(1.1); transition: 0.8s; }
+        .concept-item:hover img { filter: grayscale(0%) contrast(1); }
+        .concept-text { grid-column: 3 / span 8; text-align: center; padding: 100px 0; }
+        .concept-text h2 { font-size: 1.5rem; font-weight: 200; letter-spacing: 0.3em; margin-bottom: 40px; }
+        .concept-text p { color: var(--text-sub); font-size: 0.95rem; line-height: 2.2; max-width: 700px; margin: 0 auto; }
 
-        /* 4. BOOKING (Minimalist Calendar) */
-        .booking-ui { max-width: 500px; margin: 0 auto; padding: 60px; border: 1px solid var(--card-border); text-align: center; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin: 40px 0; }
-        .cal-item { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; border: 1px solid transparent; transition: 0.3s; color: var(--text-muted); }
-        .cal-item:hover { color: var(--accent); border-color: var(--card-border); }
-        .cal-item.selected { background: var(--accent); color: #000; border-color: var(--accent); }
-        .cal-label { font-size: 0.6rem; letter-spacing: 0.1em; opacity: 0.3; margin-bottom: 15px; }
+        /* 2. CAFES (Professional Gallery) */
+        .container { padding: 120px 5vw; max-width: 1600px; margin: 0 auto; }
+        .gallery-header { margin-bottom: 100px; border-left: 1px solid var(--border); padding-left: 30px; }
+        .gallery-header h2 { font-size: 0.8rem; letter-spacing: 0.8em; color: var(--text-sub); text-transform: uppercase; }
+        
+        .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; }
+        .card { position: relative; transition: 0.5s; }
+        .card-img-wrap { height: 70vh; overflow: hidden; border: 1px solid var(--border); }
+        .card-img { width: 100%; height: 100%; background: center/cover; filter: grayscale(100%); transition: 1.2s cubic-bezier(0.19, 1, 0.22, 1); }
+        .card:hover .card-img { filter: grayscale(0%); transform: scale(1.05); }
+        .card-info { margin-top: 30px; }
+        .card-info h3 { font-size: 1rem; font-weight: 300; letter-spacing: 0.2em; margin: 0; }
+        .card-info p { font-size: 0.6rem; color: var(--text-sub); letter-spacing: 0.3em; margin-top: 10px; text-transform: uppercase; }
 
-        footer { padding: 100px 0; text-align: center; font-size: 0.6rem; letter-spacing: 0.5em; opacity: 0.3; font-weight: 100; }
+        /* 3. CAFE DETAIL */
+        .detail-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+        .detail-img { background: center/cover; filter: grayscale(100%); }
+        .detail-body { padding: 100px 10%; display: flex; flex-direction: column; justify-content: center; }
+        .detail-body h2 { font-size: 3rem; font-weight: 100; letter-spacing: 0.2em; margin-bottom: 40px; }
+        .detail-meta { font-size: 0.7rem; letter-spacing: 0.4em; color: var(--text-sub); margin-bottom: 60px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .detail-content p { color: #ccc; margin-bottom: 30px; }
+        
+        .video-box { width: 100%; height: 300px; background: #050505; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; letter-spacing: 0.4em; color: var(--text-sub); }
 
+        /* 4. BOOKING */
+        .booking-wrap { max-width: 600px; margin: 0 auto; text-align: center; }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 60px 0; }
+        .cal-day { background: var(--bg); height: 80px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; cursor: pointer; transition: 0.3s; color: var(--text-sub); }
+        .cal-day:hover { background: #111; color: #fff; }
+        .cal-day.selected { background: #fff; color: #000; }
+
+        footer { padding: 80px; border-top: 1px solid var(--border); text-align: center; font-size: 0.5rem; letter-spacing: 0.6em; color: var(--text-sub); text-transform: uppercase; }
+
+        @media (max-width: 1024px) {
+            .gallery { grid-template-columns: repeat(2, 1fr); }
+            .detail-layout { grid-template-columns: 1fr; }
+            .detail-img { height: 50vh; }
+        }
         @media (max-width: 768px) {
-            .gallery { display: block; }
-            .card { width: 100%; height: 55vh; margin-bottom: 40px !important; transform: none !important; }
-            .hero h1 { font-size: 2.8rem; }
-            .story-container { padding: 60px 5vw; }
+            .gallery { grid-template-columns: 1fr; }
+            .concept-grid { display: block; }
+            .concept-item { margin-bottom: 20px; }
+            .hero h1 { font-size: 3.5rem; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo" onclick="showPage('index')">YURUCAFE</div>
+        <div class="logo" onclick="showPage('index')">YURUCAFE / STUDY 01</div>
         <div class="nav-links">
-            <span onclick="showPage('cafes')">CAFES</span>
-            <span onclick="showPage('booking')">RESERVE</span>
+            <span onclick="showPage('cafes')">ARCHIVE</span>
+            <span onclick="showPage('booking')">PRACTICE</span>
         </div>
     </nav>
 
+    <!-- 1. INDEX -->
     <section id="index" class="page active">
         <div class="hero">
-            <h1>Silence</h1>
-            <p>Dialogue through Coffee</p>
-            <div class="btn" onclick="showPage('cafes')">Explore the Space</div>
+            <div class="hero-bg"></div>
+            <div class="hero-content">
+                <h1>Silence</h1>
+                <p>AN ACADEMIC APPROACH TO CONVERSATION</p>
+                <div class="btn" onclick="showPage('cafes')" style="margin-top: 60px;">Explore Archive</div>
+            </div>
         </div>
-        <div class="concept-text">
-            <h2>ゆるやかな対話の場</h2>
-            <p>
-                忙しい学校生活や社会生活の中で、<br>
-                一度立ち止まり、コーヒーの香りに身を委ねる。<br><br>
-                そこにあるのは、留学生も、言葉を学ぶ人も、<br>
-                誰もが自分らしくあれる静かな空間です。<br><br>
-                「個性を表現してもいい」という安心感とともに、<br>
-                他者の背景に触れる感動を、ここで。
-            </p>
-            <div class="btn" style="padding: 15px 40px; font-size: 0.7rem;" onclick="showPage('cafes')">店舗一覧を見る</div>
+
+        <!-- Multiple Image Grid for Concept -->
+        <div class="concept-grid">
+            <div class="concept-item"><img src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?q=80&w=1200" alt="Cafe Architecture"></div>
+            <div class="concept-item wide"><img src="https://images.unsplash.com/photo-1507133750040-4a8f57021571?q=80&w=2000" alt="Coffee Details"></div>
+            <div class="concept-text">
+                <h2>ゆるやかな対話の、学術的実践</h2>
+                <p>
+                    yurucafeは、コーヒーを「媒介」として、個人の背景や文化の差異を観察・体験するためのプラクティスです。<br><br>
+                    既存の商業的カフェ空間を「対話の実験場」へと再定義し、留学生や心理的安心を求める人々に、自己を表現し他者と繋がるための静かなインフラを提供します。
+                </p>
+            </div>
+            <div class="concept-item wide"><img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=2000" alt="Interior Design"></div>
+            <div class="concept-item"><img src="https://images.unsplash.com/photo-1521017432531-fbd92d74426b?q=80&w=1200" alt="People Interaction"></div>
         </div>
     </section>
 
+    <!-- 2. CAFES (Archive) -->
     <section id="cafes" class="page">
         <div class="container">
-            <div class="section-title" style="text-align: center; margin-bottom: 100px;">
-                <p style="letter-spacing: 0.8em; color: var(--accent); font-size: 0.7rem;">PARTNER CAFES</p>
-                <h2 style="font-weight: 100; letter-spacing: 0.4em; font-size: 2rem;">扉をひらく</h2>
+            <div class="gallery-header">
+                <h2>Case Studies / 01-06</h2>
             </div>
             <div class="gallery" id="cafe-list">
-                </div>
+                <!-- Data-driven injection -->
+            </div>
         </div>
     </section>
 
+    <!-- 3. CAFE DETAIL -->
     <section id="cafe" class="page">
-        <div id="cafe-detail-content">
-            </div>
+        <div id="cafe-detail-content"></div>
     </section>
 
+    <!-- 4. BOOKING (Practice) -->
     <section id="booking" class="page">
         <div class="container">
-            <div class="booking-ui">
-                <p style="font-size: 0.75rem; letter-spacing: 0.4em; color: var(--accent); margin-bottom: 30px;">RESERVATION</p>
-                <h2 style="font-weight: 100; letter-spacing: 0.2em; margin-bottom: 40px;">対話を予約する</h2>
-                <div class="calendar-grid" id="calendar">
-                    </div>
-                <div id="booking-message" style="font-size: 0.7rem; color: var(--accent); height: 20px; margin-bottom: 20px;"></div>
-                <div class="btn" style="width: 100%; box-sizing: border-box;" onclick="submitBooking()">予約リクエストを送信</div>
+            <div class="booking-wrap">
+                <div class="gallery-header" style="text-align: center; border: none; padding: 0;">
+                    <h2 style="margin-bottom: 20px;">Reservation of Practice</h2>
+                    <p style="font-size: 0.6rem; letter-spacing: 0.3em; color: var(--text-sub);">対話イベントへの参加予約</p>
+                </div>
+                <div class="calendar" id="calendar"></div>
+                <div id="booking-status" style="font-size: 0.6rem; letter-spacing: 0.2em; margin-bottom: 40px; color: #fff;"></div>
+                <div class="btn" onclick="confirmBooking()">Request Confirmation</div>
             </div>
         </div>
     </section>
 
-    <footer>&copy; 2025 YURUCAFE.ORG - ACADEMIC PROJECT</footer>
+    <footer>
+        YURUCAFE.ORG / AN INTERDISCIPLINARY PROJECT BY ACADEMIC EXPLORATION
+    </footer>
 
     <script>
-        // MVP Data: 6架空カフェ
         const cafes = [
-            { id: 1, name: "灯 - Akari", owner: "Haruki", img: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=1200", desc: "木の温もりに包まれる空間。" },
-            { id: 2, name: "Nest", owner: "Mina", img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1200", desc: "都会の喧騒を忘れる隠れ家。" },
-            { id: 3, name: "Canvas", owner: "Leo", img: "https://images.unsplash.com/photo-1559925393-8be0ec418cd9?q=80&w=1200", desc: "個性を表現する、真っ白な場所。" },
-            { id: 4, name: "Roots", owner: "Elena", img: "https://images.unsplash.com/photo-1521017432531-fbd92d74426b?q=80&w=1200", desc: "コーヒーの本質を追求する空間。" },
-            { id: 5, name: "Silence", owner: "Ken", img: "https://images.unsplash.com/photo-1453614512568-c4024d13c247?q=80&w=1200", desc: "言葉を必要としない静寂。" },
-            { id: 6, name: "Harbor", owner: "Sofia", img: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?q=80&w=1200", desc: "世界中の物語が集まる港。" }
+            { id: 1, name: "灯 - Akari", owner: "Haruki", img: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=1200", meta: "Architecture of Light" },
+            { id: 2, name: "Nest", owner: "Mina", img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1200", meta: "Urban Sanctuary" },
+            { id: 3, name: "Canvas", owner: "Leo", img: "https://images.unsplash.com/photo-1559925393-8be0ec418cd9?q=80&w=1200", meta: "Expressionist Space" },
+            { id: 4, name: "Roots", owner: "Elena", img: "https://images.unsplash.com/photo-1521017432531-fbd92d74426b?q=80&w=1200", meta: "Origins of Coffee" },
+            { id: 5, name: "Silence", owner: "Ken", img: "https://images.unsplash.com/photo-1453614512568-c4024d13c247?q=80&w=1200", meta: "Non-verbal Practice" },
+            { id: 6, name: "Harbor", owner: "Sofia", img: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?q=80&w=1200", meta: "Cross-Cultural Dock" }
         ];
 
         function showPage(pageId, cafeId = null) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const target = document.getElementById(pageId);
-            target.classList.add('active');
+            document.getElementById(pageId).classList.add('active');
             window.scrollTo(0, 0);
 
             if (pageId === 'cafes') renderCafes();
@@ -191,10 +212,12 @@
             const list = document.getElementById('cafe-list');
             list.innerHTML = cafes.map(c => `
                 <div class="card" onclick="showPage('cafe', ${c.id})">
-                    <div class="card-img" style="background-image: url('${c.img}')"></div>
-                    <div class="card-overlay">
-                        <p>Owner: ${c.owner}</p>
+                    <div class="card-img-wrap">
+                        <div class="card-img" style="background-image: url('${c.img}')"></div>
+                    </div>
+                    <div class="card-info">
                         <h3>${c.name}</h3>
+                        <p>${c.meta} / OWNER: ${c.owner}</p>
                     </div>
                 </div>
             `).join('');
@@ -204,15 +227,17 @@
             const c = cafes.find(x => x.id === id);
             const content = document.getElementById('cafe-detail-content');
             content.innerHTML = `
-                <div class="detail-header" style="background-image: url('${c.img}')"></div>
-                <div class="story-container">
-                    <div class="story-content">
-                        <span class="owner-name">Owner / ${c.owner}</span>
+                <div class="detail-layout">
+                    <div class="detail-img" style="background-image: url('${c.img}')"></div>
+                    <div class="detail-body">
+                        <span class="detail-meta">CASE STUDY / 0${c.id} / ${c.owner}</span>
                         <h2>${c.name}</h2>
-                        <p>コーヒーは単なる飲み物ではなく、人の時間をゆっくりにし、正直な会話を生むための「媒介」です。ここでは、誰もが自分の言葉で、自分のペースで話をすることができます。</p>
-                        <p>${c.desc} この場所には、あなたの個性を否定する人はいません。コーヒーの香りと共に、ゆるやかな対話をお楽しみください。</p>
-                        <div class="video-placeholder">ATMOSPHERE MOVIE (1-2min)</div>
-                        <div class="btn" onclick="showPage('booking')">対話の予約をする</div>
+                        <div class="detail-content">
+                            <p>コーヒーは単なる飲料ではなく、時間と空間を減速させるための装置です。ここでは、所有ではなく「居ること」を目的とした対話のプロトコルが共有されます。</p>
+                            <p>店主 ${c.owner} の淹れる一杯は、言葉を介さないコミュニケーションの始まりを意味します。沈黙を許容し、差異を静かに味わうための空間設計がなされています。</p>
+                        </div>
+                        <div class="video-box">DOCUMENTARY / 1:20 / ARCHIVE</div>
+                        <div class="btn" onclick="showPage('booking')" style="margin-top: 60px;">Request Participation</div>
                     </div>
                 </div>
             `;
@@ -220,18 +245,18 @@
 
         function renderCalendar() {
             const cal = document.getElementById('calendar');
-            const days = Array.from({length: 21}, (_, i) => i + 10); // Dummy dates
-            cal.innerHTML = days.map(d => `<div class="cal-item" onclick="selectDate(this, ${d})">${d}</div>`).join('');
+            const items = Array.from({length: 31}, (_, i) => i + 1);
+            cal.innerHTML = items.map(d => `<div class="cal-day" onclick="selectDate(this, ${d})">${d}</div>`).join('');
         }
 
         function selectDate(el, d) {
-            document.querySelectorAll('.cal-item').forEach(i => i.classList.remove('selected'));
+            document.querySelectorAll('.cal-day').forEach(i => i.classList.remove('selected'));
             el.classList.add('selected');
-            document.getElementById('booking-message').innerText = `${d}日を選択しました`;
+            document.getElementById('booking-status').innerText = `DATE SELECTED: DECEMBER ${d}, 2025`;
         }
 
-        function submitBooking() {
-            alert("予約リクエストを受け付けました。後ほどご連絡します。");
+        function confirmBooking() {
+            alert("Reservation request sent to yurucafe administration.");
         }
     </script>
 </body>
