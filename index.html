@@ -52,7 +52,7 @@
         }
         .btn:hover { background: #fff; color: #000; }
 
-        /* Hero - Visual Balance Improved */
+        /* Hero - Typography Adjusted */
         .hero { height: 100vh; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .hero-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -60,10 +60,14 @@
             filter: brightness(35%);
         }
         .hero-content { position: relative; text-align: center; width: 100%; padding: 0 5vw; box-sizing: border-box; }
+        
+        /* ここでサイズを小さく調整しました */
         .hero h1 { 
-            font-size: clamp(4rem, 15vw, 10rem); font-weight: 100; letter-spacing: 0.5em; 
-            margin: 0; text-transform: uppercase; line-height: 1; padding-left: 0.5em; /* To offset the last letter's spacing */
+            font-size: clamp(3rem, 10vw, 6rem); 
+            font-weight: 100; letter-spacing: 0.5em; 
+            margin: 0; text-transform: uppercase; line-height: 1.2; padding-left: 0.5em;
         }
+        
         .hero p { 
             font-size: 0.8rem; letter-spacing: 0.8em; color: rgba(255,255,255,0.7); 
             margin-top: 40px; margin-bottom: 60px; text-transform: uppercase;
@@ -141,7 +145,6 @@
         </div>
     </nav>
 
-    <!-- 1. INDEX -->
     <section id="index" class="page active">
         <div class="hero">
             <div class="hero-bg"></div>
@@ -154,7 +157,6 @@
         <div id="philosophy-container"></div>
     </section>
 
-    <!-- 2. FINDER -->
     <section id="finder" class="page">
         <div class="finder-container">
             <div style="text-align: left; margin-bottom: 60px; border-left: 2px solid #fff; padding-left: 30px;">
@@ -168,8 +170,7 @@
                     <option value="melbourne">MELBOURNE (メルボルン)</option>
                 </select>
                 <select id="time-select" class="select-box" onchange="performSearch()">
-                    <!-- Time options via JS -->
-                </select>
+                    </select>
             </div>
 
             <div id="calendar-title" style="margin-bottom: 20px; font-size: 1rem; letter-spacing: 0.3em;"></div>
@@ -181,7 +182,6 @@
         </div>
     </section>
 
-    <!-- 3. CAFES (Archive) -->
     <section id="cafes" class="page">
         <div class="container" style="padding: 120px 5vw;">
             <div style="margin-bottom: 80px; border-left: 2px solid #fff; padding-left: 30px;">
@@ -192,12 +192,10 @@
         </div>
     </section>
 
-    <!-- 4. CAFE DETAIL -->
     <section id="cafe" class="page">
         <div id="cafe-detail-content"></div>
     </section>
 
-    <!-- 5. BOOKING -->
     <section id="booking" class="page">
         <div class="container" style="padding: 120px 5vw; max-width: 800px; margin: 0 auto; text-align: center;">
             <div style="margin-bottom: 60px;">
@@ -207,8 +205,7 @@
             
             <div class="selector-group">
                 <select id="booking-time-select" class="select-box">
-                    <!-- Time options via JS -->
-                </select>
+                    </select>
             </div>
 
             <div class="calendar-grid" id="booking-calendar"></div>
