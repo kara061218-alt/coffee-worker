@@ -1,290 +1,230 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yurucafe - 話題が先に置かれているカフェ</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
-        
-        body {
-            font-family: 'Zen Maru Gothic', sans-serif;
-            background-color: #000000;
-            /* メイン文字色をより明るい白に変更 */
-            color: #FFFFFF;
-        }
+import React, { useState, useMemo } from 'react';
+import { Search, Heart, Plus, Coffee, Sparkles } from 'lucide-react';
 
-        .finder-card {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
+const App = () => {
+  const [view, setView] = useState('finder');
+  const [day, setDay] = useState('today'); // 'today' or 'tomorrow'
+  const [stocks, setStocks] = useState([]);
+  const [toast, setToast] = useState(null);
 
-        .glass-nav {
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(15px);
-            border-top: 1px solid #333;
-        }
+  // 24個のトピック。すべて異なるコーヒー・カフェの画像（Unsplash）を使用。
+  const allTopics = [
+    // --- TODAY (12 Topics) ---
+    { id: 1, name: "Cafe Lento", area: "下北沢", topic: "留学時のカルチャーショック", day: "today", active: true, presence: "夕暮れ時まで、置かれています", habit: "海外の空気を知る人が、ふらっと立ち寄る時間です", image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800" },
+    { id: 2, name: "Komorebi Tea House", area: "吉祥寺", topic: "高校時代にやらずに後悔していること", day: "today", active: true, presence: "日没まで、置かれています", habit: "放課後のチャイムのような、少し切ない時間によく現れます", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800" },
+    { id: 3, name: "Standard Brew", area: "中目黒", topic: "人生が変わった映画", day: "today", active: false, presence: "夜の静寂に、置かれ始めます", habit: "一日の終わりに、物語を反芻したくなる時間に馴染みます", image: "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=800" },
+    { id: 4, name: "Mugi Cafe", area: "代々木", topic: "あのとき、選ばなかったもう一つの進路", day: "today", active: true, presence: "陽が沈むまで、置かれています", habit: "人生の岐路に立つ人が、パンの香りに誘われて置いた話題です", image: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&q=80&w=800" },
+    { id: 5, name: "Quiet Corner", area: "三軒茶屋", topic: "「自分はこういう人間だ」と思い込んだ最初の瞬間", day: "today", active: false, presence: "18時、置かれ始めます", habit: "自分自身を見つめ直したいとき、この話題が灯ります", image: "https://images.unsplash.com/photo-1497933322477-911ef056266d?auto=format&fit=crop&q=80&w=800" },
+    { id: 6, name: "Blue Door Coffee", area: "自由が丘", topic: "一度やめたけど、また戻ってきたもの", day: "today", active: true, presence: "閉店まで、置かれています", habit: "巡り巡って大切なものに気づいた時、ここに戻りたくなります", image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=800" },
+    { id: 7, name: "Street Library", area: "蔵前", topic: "他人に言われて、今も残っている一言", day: "today", active: true, presence: "夜が深まるまで、置かれています", habit: "言葉の重みを知る人が、ひっそりと残した記憶です", image: "https://images.unsplash.com/photo-1521017432531-fbd92d744264?auto=format&fit=crop&q=80&w=800" },
+    { id: 8, name: "Green Terrace", area: "代官山", topic: "18歳の自分に、今なら伝えたいこと", day: "today", active: false, presence: "明日の朝、置かれます", habit: "未来と過去が交差するような、透明な空気に合います", image: "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&q=80&w=800" },
+    { id: 9, name: "Foggy Glass", area: "高円寺", topic: "周りと比べるのをやめられたきっかけ", day: "today", active: true, presence: "雨の日、特によく置かれています", habit: "自分のペースを取り戻した人が、そっと教えてくれる気配です", image: "https://images.unsplash.com/photo-1541167760496-162955ed8a9f?auto=format&fit=crop&q=80&w=800" },
+    { id: 10, name: "Windy Hill", area: "駒沢", topic: "日本を離れて初めて気づいた、日本っぽさ", day: "today", active: true, presence: "夕暮れまで、置かれています", habit: "風の強い日、遠くの街を思う時に現れます", image: "https://images.unsplash.com/photo-1464349153735-7db50ed83c84?auto=format&fit=crop&q=80&w=800" },
+    { id: 11, name: "Star Dust", area: "恵比寿", topic: "海外で「自分がマイノリティだ」と感じた瞬間", day: "today", active: false, presence: "星が出る頃、置かれます", habit: "世界の見え方が変わった、そんな夜の語らいに。", image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800" },
+    { id: 12, name: "Sketch Cafe", area: "表参道", topic: "帰国後に感じた逆カルチャーショック", day: "today", active: true, presence: "日没まで、置かれています", habit: "当たり前がそうでなくなった時の、少しの違和感の話。", image: "https://images.unsplash.com/photo-1559925393-8be0ec41b504?auto=format&fit=crop&q=80&w=800" },
 
-        /* フェードインアニメーション */
-        .view-transition {
-            animation: fadeIn 0.4s ease-out;
-        }
+    // --- TOMORROW (12 Topics) ---
+    { id: 13, name: "Cafe Lento", area: "下北沢", topic: "異文化で恥をかいたけど、今では笑える話", day: "tomorrow", active: false, presence: "お昼頃、置かれ始めます", habit: "失敗を笑いに変える、そんな明るい午後に合います", image: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&q=80&w=800" },
+    { id: 14, name: "Komorebi Tea House", area: "吉祥寺", topic: "「ここにはもう住めないかも」と思った場所", day: "tomorrow", active: false, presence: "陽が昇ったら、置かれます", habit: "居場所を探し続ける人の、道標のような話題です", image: "https://images.unsplash.com/photo-1444418185997-1145404609e0?auto=format&fit=crop&q=80&w=800" },
+    { id: 15, name: "Standard Brew", area: "中目黒", topic: "10代の自分に刺さりすぎた映画や本", day: "tomorrow", active: false, presence: "夕方から、置かれ始めます", habit: "あの頃の熱量を、少しだけ取り戻せるかもしれません", image: "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?auto=format&fit=crop&q=80&w=800" },
+    { id: 16, name: "Mugi Cafe", area: "代々木", topic: "昔は分からなかったけど、今なら分かる作品", day: "tomorrow", active: false, presence: "明日の午後、現れます", habit: "時間が解決してくれた、理解の深まりについての話。", image: "https://images.unsplash.com/photo-1507133750040-4c8b5f1a9903?auto=format&fit=crop&q=80&w=800" },
+    { id: 17, name: "Quiet Corner", area: "三軒茶屋", topic: "観終わったあと、誰かと話したくなった映画", day: "tomorrow", active: false, presence: "日没時に、置かれます", habit: "独り占めできない感動を、分け合いたいときに。", image: "https://images.unsplash.com/photo-1536392706976-e486e2ba97af?auto=format&fit=crop&q=80&w=800" },
+    { id: 18, name: "Blue Door Coffee", area: "自由が丘", topic: "何度も観てしまう一本と、その理由", day: "tomorrow", active: false, presence: "深夜、置かれ始めます", habit: "お守りのような作品を、心に持っている人のために。", image: "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&q=80&w=800" },
+    { id: 19, name: "Street Library", area: "蔵前", topic: "最初に「働くってこういうことか」と思った瞬間", day: "tomorrow", active: false, presence: "朝の光と共に、置かれます", habit: "大人の入り口に立った時の、少し緊張した感覚の話。", image: "https://images.unsplash.com/photo-1497015289639-54688650d173?auto=format&fit=crop&q=80&w=800" },
+    { id: 20, name: "Green Terrace", area: "代官山", topic: "やりがいとお金の間で、迷った経験", day: "tomorrow", active: false, presence: "お昼休みに、置かれます", habit: "現実と理想の間で揺れる、等身大の悩みです", image: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?auto=format&fit=crop&q=80&w=800" },
+    { id: 21, name: "Foggy Glass", area: "高円寺", topic: "「向いてない」と思いながら続けたこと", day: "tomorrow", active: false, presence: "夕方、置かれ始めます", habit: "才能よりも、続けたことの尊さを語るための気配。", image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=800" },
+    { id: 22, name: "Windy Hill", area: "駒沢", topic: "大人になってから学び直したこと", day: "tomorrow", active: false, presence: "休日、置かれています", habit: "知る喜びを、もう一度見つけた人の話題です", image: "https://images.unsplash.com/photo-1525904067872-4e555523da0a?auto=format&fit=crop&q=80&w=800" },
+    { id: 23, name: "Star Dust", area: "恵比寿", topic: "今の自分をつくった、小さな習慣", day: "tomorrow", active: false, presence: "深夜、ひっそりと置かれます", habit: "毎日続けている、自分を整えるための魔法の話。", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800" },
+    { id: 24, name: "Sketch Cafe", area: "表参道", topic: "これからの人生で、手放したい価値観", day: "tomorrow", active: false, presence: "新しい朝に、置かれます", habit: "身軽になるために、そっと脱ぎ捨てる言葉たち。", image: "https://images.unsplash.com/photo-1512568448812-16a1c8285810?auto=format&fit=crop&q=80&w=800" }
+  ];
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+  const displayedTopics = useMemo(() => {
+    return allTopics.filter(t => t.day === day);
+  }, [day]);
 
-        /* 画像バックアップ */
-        img {
-            background-color: #1a1a1a;
-        }
+  const showMessage = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
 
-        /* 可読性向上のためのテキストシャドウ（画像上の文字用） */
-        .text-shadow-sm {
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-    </style>
-</head>
-<body class="max-w-md mx-auto min-h-screen shadow-2xl border-x border-zinc-900 relative overflow-x-hidden">
+  const toggleStock = (id) => {
+    if (stocks.includes(id)) {
+      setStocks(stocks.filter(s => s !== id));
+    } else {
+      setStocks([...stocks, id]);
+      showMessage("記憶の片隅に置きました");
+    }
+  };
 
-    <!-- Header / Branding -->
-    <header class="pt-10 px-6 pb-4">
-        <h1 class="text-2xl font-bold tracking-widest text-white">Yurucafe</h1>
-        <p class="text-[11px] text-zinc-300 mt-2 italic tracking-tighter font-medium">「人が集まるカフェ」ではなく「話題が先に置かれているカフェ」</p>
-    </header>
+  const handleImageError = (e) => {
+    e.target.src = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800";
+    e.target.style.opacity = "0.7";
+  };
 
-    <!-- Main View Area -->
-    <main id="main-content" class="px-5 pb-32">
-        <!-- Views will be injected here -->
-    </main>
+  return (
+    <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-zinc-700 max-w-md mx-auto relative overflow-hidden">
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,#111,0%,#000_100%)] pointer-events-none" />
 
-    <!-- Navigation -->
-    <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-20 glass-nav flex items-center justify-around px-8 z-50">
-        <button onclick="switchView('finder')" class="flex flex-col items-center gap-1 group">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-zinc-500 group-[.active]:text-white" id="nav-finder-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <span class="text-[10px] text-zinc-500 group-[.active]:text-white font-bold tracking-widest">FIND</span>
+      <header className="relative pt-16 px-8 pb-4">
+        <h1 className="text-3xl font-bold tracking-[0.3em] uppercase opacity-90">Yurucafe</h1>
+        <p className="text-[11px] text-zinc-500 mt-4 tracking-[0.15em] leading-relaxed font-medium italic">
+          誰かと待ち合わせるのではなく、<br />
+          そこに置かれている「話題」に会いに行く。
+        </p>
+
+        {view === 'finder' && (
+          <div className="flex gap-6 mt-10 border-b border-white/5">
+            <button 
+              onClick={() => setDay('today')}
+              className={`pb-3 text-[12px] tracking-[0.2em] font-bold transition-all relative ${day === 'today' ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
+            >
+              今日
+              {day === 'today' && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white animate-in fade-in zoom-in" />}
+            </button>
+            <button 
+              onClick={() => setDay('tomorrow')}
+              className={`pb-3 text-[12px] tracking-[0.2em] font-bold transition-all relative ${day === 'tomorrow' ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
+            >
+              明日
+              {day === 'tomorrow' && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white animate-in fade-in zoom-in" />}
+            </button>
+          </div>
+        )}
+      </header>
+
+      <main className="relative px-6 pb-40">
+        {view === 'finder' && (
+          <div key={day} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <p className="text-[11px] text-zinc-500 my-8 tracking-widest font-medium">
+              {day === 'today' ? "いま、この瞬間の街の気配。" : "明日、ふと思い出した時に寄れる気配。"}
+            </p>
+            
+            <div className="space-y-16">
+              {displayedTopics.map(item => (
+                <div key={item.id} className="relative group">
+                  <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-zinc-900 shadow-2xl transition-all">
+                    <img 
+                      src={item.image} 
+                      className="w-full h-full object-cover opacity-90 transition-opacity duration-700" 
+                      alt={item.name} 
+                      onError={handleImageError}
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
+                    
+                    <div className="absolute top-6 left-6">
+                      <div className="flex items-center px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10">
+                        <span className={`w-2 h-2 rounded-full mr-3 shadow-lg ${item.active ? 'bg-green-400 shadow-green-400/50 animate-pulse' : 'bg-zinc-600'}`} />
+                        <span className="text-[10px] font-bold tracking-widest whitespace-nowrap">
+                          {item.presence}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="absolute bottom-8 left-8 right-8">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[8px] px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-sm border border-white/10 font-bold tracking-widest uppercase">
+                          {item.area}
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold tracking-tight mb-2 leading-snug text-white drop-shadow-md">{item.topic}</h3>
+                      <p className="text-[10px] text-zinc-300 font-bold tracking-[0.2em] uppercase">{item.name}</p>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => toggleStock(item.id)}
+                    className="absolute -bottom-4 right-8 w-12 h-12 rounded-full bg-zinc-100 text-black flex items-center justify-center shadow-xl active:scale-90 transition-all z-10"
+                  >
+                    <Heart className={`w-5 h-5 ${stocks.includes(item.id) ? 'fill-rose-500 stroke-rose-500' : 'stroke-zinc-900'}`} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-24 text-center">
+              <Sparkles className="w-5 h-5 text-zinc-800 mx-auto mb-4" />
+              <p className="text-[9px] text-zinc-700 tracking-[0.5em] font-bold uppercase">End of Atmosphere</p>
+            </div>
+          </div>
+        )}
+
+        {view === 'stocks' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 pt-6">
+            <h2 className="text-2xl font-bold tracking-[0.2em] mb-4 text-zinc-100">STOCKS</h2>
+            <p className="text-[12px] text-zinc-500 mb-12 tracking-widest leading-loose">
+              ふと思い出した時に、また会えるように。<br />
+              ここは記憶の「栞」を挟む場所。
+            </p>
+
+            {stocks.length === 0 ? (
+              <div className="py-20 text-center border border-dashed border-zinc-800 rounded-[2rem]">
+                <Coffee className="w-8 h-8 text-zinc-800 mx-auto mb-4 opacity-50" />
+                <p className="text-[11px] text-zinc-600 tracking-widest">記憶に留めた話題はまだありません。</p>
+              </div>
+            ) : (
+              <div className="space-y-12">
+                {allTopics.filter(t => stocks.includes(t.id)).map(item => (
+                  <div key={item.id} className="group bg-zinc-900/20 border border-white/5 rounded-[2rem] p-6">
+                    <div className="flex gap-5 mb-4">
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-zinc-900 flex-shrink-0">
+                        <img 
+                          src={item.image} 
+                          className="w-full h-full object-cover opacity-90" 
+                          alt="" 
+                          onError={handleImageError}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-md font-bold mb-1 text-zinc-200">{item.topic}</h3>
+                        <p className="text-[9px] text-zinc-500 tracking-widest uppercase">{item.name} / {item.area}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <p className="text-[11px] text-zinc-400 font-medium leading-relaxed italic border-l-2 border-zinc-800 pl-4">
+                        {item.habit}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-24 bg-black/90 backdrop-blur-xl border-t border-white/5 flex items-center justify-around px-10 z-50">
+        <button 
+          onClick={() => setView('finder')}
+          className={`flex flex-col items-center gap-2 transition-all ${view === 'finder' ? 'text-white' : 'text-zinc-600'}`}
+        >
+          <Search className="w-6 h-6" strokeWidth={view === 'finder' ? 2.5 : 1.5} />
+          <span className="text-[8px] font-black tracking-[0.2em]">FINDER</span>
+        </button>
+
+        <button className="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center border border-zinc-700 -mt-8 shadow-2xl active:scale-95 transition-transform">
+          <Plus className="w-5 h-5 text-zinc-500" />
         </button>
         
-        <button onclick="switchView('likes')" class="relative flex flex-col items-center gap-1 group">
-            <div id="like-badge" class="hidden absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-zinc-500 group-[.active]:text-rose-500" id="nav-likes-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-            <span class="text-[10px] text-zinc-500 group-[.active]:text-white font-bold tracking-widest">STOCKS</span>
+        <button 
+          onClick={() => setView('stocks')}
+          className={`flex flex-col items-center gap-2 transition-all ${view === 'stocks' ? 'text-white' : 'text-zinc-600'}`}
+        >
+          <div className="relative">
+            <Heart className={`w-6 h-6 ${view === 'stocks' ? 'text-rose-400' : ''}`} strokeWidth={view === 'stocks' ? 2.5 : 1.5} />
+            {stocks.length > 0 && <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full" />}
+          </div>
+          <span className="text-[8px] font-black tracking-[0.2em]">STOCKS</span>
         </button>
-    </nav>
+      </nav>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-white text-black font-bold px-8 py-3 rounded-full text-xs opacity-0 pointer-events-none transition-opacity duration-300 z-[60] shadow-xl">
-        覚えておきました
+      {toast && (
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-zinc-100 text-black px-6 py-2.5 rounded-full text-[10px] font-bold tracking-[0.2em] shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-300 z-[100]">
+          {toast}
+        </div>
+      )}
     </div>
+  );
+};
 
-    <script>
-        const cafes = [
-            { 
-                id: 1, name: "Cafe Lento", area: "下北沢", topic: "最近読んだ本の話", time: "14:00 - 17:00", 
-                img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800", 
-                note: "奥の大きな木のテーブルに、静かにカードが置かれています。" 
-            },
-            { 
-                id: 2, name: "Komorebi Tea", area: "吉祥寺", topic: "フィルムカメラの魅力", time: "10:00 - 12:00", 
-                img: "https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&q=80&w=800", 
-                note: "カウンターの一番端。小さな一輪挿しの横が話題の場所です。" 
-            },
-            { 
-                id: 3, name: "Standard Brew", area: "中目黒", topic: "週末に行きたい展示会", time: "18:00 - 20:00", 
-                img: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&q=80&w=800", 
-                note: "テラス側のベンチシート。夜の光の中で話題が待っています。" 
-            },
-            { 
-                id: 4, name: "Yuki no Hi", area: "代々木公園", topic: "焚き火を眺めるキャンプ", time: "15:00 - 18:00", 
-                img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=800", 
-                note: "店内のレコードプレーヤーの近く。穏やかな音楽とともに。" 
-            }
-        ];
-
-        let likedIds = JSON.parse(localStorage.getItem('yurucafe_likes') || '[]');
-
-        function switchView(view) {
-            const finderIcon = document.getElementById('nav-finder-icon').parentElement;
-            const likesIcon = document.getElementById('nav-likes-icon').parentElement;
-
-            if (view === 'finder') {
-                finderIcon.classList.add('active');
-                likesIcon.classList.remove('active');
-                renderFinder();
-            } else {
-                finderIcon.classList.remove('active');
-                likesIcon.classList.add('active');
-                renderLikes();
-            }
-            window.scrollTo(0, 0);
-        }
-
-        function renderFinder() {
-            const content = document.getElementById('main-content');
-            content.innerHTML = `
-                <div class="view-transition">
-                    <p class="text-[12px] text-zinc-200 mb-8 leading-relaxed tracking-widest font-medium">
-                        気になるトピックを見つけたら、<br>
-                        「🤍」で覚えておくだけ。
-                    </p>
-                    <div class="space-y-10">
-                        ${cafes.map(cafe => `
-                            <div class="finder-card relative">
-                                <div class="relative overflow-hidden rounded-[2rem] aspect-[4/5] bg-zinc-900 shadow-2xl">
-                                    <img src="${cafe.img}" alt="${cafe.name}" 
-                                         class="w-full h-full object-cover opacity-70" 
-                                         onerror="this.src='https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800'">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                                    
-                                    <div class="absolute bottom-8 left-8 right-8 text-white text-shadow-sm">
-                                        <div class="flex items-center gap-2 mb-3">
-                                            <span class="text-[10px] bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 tracking-widest uppercase font-bold text-white">${cafe.area}</span>
-                                            <span class="text-[10px] text-zinc-100 font-bold">${cafe.time} 頃</span>
-                                        </div>
-                                        <h3 class="text-xl font-bold tracking-tight mb-1">${cafe.topic}</h3>
-                                        <p class="text-[11px] text-zinc-200 tracking-widest uppercase font-medium">${cafe.name}</p>
-                                    </div>
-                                </div>
-                                
-                                <button onclick="toggleLike(${cafe.id})" class="absolute top-6 right-6 w-14 h-14 flex items-center justify-center bg-black/50 backdrop-blur-xl rounded-full border border-white/20 shadow-lg transition-transform active:scale-90">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 ${likedIds.includes(cafe.id) ? 'fill-rose-500 text-rose-500' : 'text-white'}" id="like-icon-${cafe.id}" fill="${likedIds.includes(cafe.id) ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                </button>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="py-20 text-center">
-                        <p class="text-[10px] text-zinc-600 font-bold tracking-[0.5em]">END OF LIST</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderLikes() {
-            const content = document.getElementById('main-content');
-            const likedCafes = cafes.filter(c => likedIds.includes(c.id));
-
-            if (likedCafes.length === 0) {
-                content.innerHTML = `
-                    <div class="view-transition flex flex-col items-center justify-center py-32 text-center">
-                        <div class="w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center mb-6 border border-zinc-800">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                        </div>
-                        <p class="text-zinc-300 text-sm tracking-widest leading-loose font-medium">ストックされている<br>話題はありません。</p>
-                        <button onclick="switchView('finder')" class="mt-8 text-[11px] font-bold text-white border-b-2 border-white pb-1 tracking-[0.2em]">
-                            話題を探しにいく
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-
-            content.innerHTML = `
-                <div class="view-transition">
-                    <h2 class="text-xl font-bold text-white mb-2 tracking-widest">STOCKS</h2>
-                    <p class="text-[11px] text-zinc-300 mb-10 leading-relaxed tracking-widest font-medium">
-                        話題が置かれている時間です。<br>
-                        予約不要で、好きな時に立ち寄れます。
-                    </p>
-
-                    <div class="space-y-16">
-                        ${likedCafes.map(cafe => `
-                            <div class="flex flex-col gap-6">
-                                <div class="flex gap-5 items-start">
-                                    <div class="w-24 h-24 rounded-2xl overflow-hidden bg-zinc-900 shadow-lg flex-shrink-0 border border-zinc-800">
-                                        <img src="${cafe.img}" class="w-full h-full object-cover opacity-90">
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-white text-base leading-snug">${cafe.topic}</h3>
-                                        <p class="text-[11px] text-zinc-400 mt-1 tracking-widest uppercase font-bold">${cafe.name}</p>
-                                        <div class="flex flex-wrap gap-2 mt-3">
-                                            <span class="text-[9px] bg-zinc-800 text-white px-2.5 py-1 rounded-md border border-zinc-700 font-bold tracking-widest uppercase">${cafe.area}</span>
-                                            <span class="text-[9px] bg-zinc-800 text-white px-2.5 py-1 rounded-md border border-zinc-700 font-bold tracking-widest uppercase">${cafe.time}</span>
-                                        </div>
-                                    </div>
-                                    <button onclick="toggleLike(${cafe.id})" class="p-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-rose-500 text-rose-500" viewBox="0 0 24 24">
-                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                
-                                <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl relative overflow-hidden">
-                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-zinc-600"></div>
-                                    <p class="text-[13px] text-zinc-100 leading-relaxed italic font-medium">
-                                        「${cafe.note}」
-                                    </p>
-                                    <div class="mt-5 pt-4 border-t border-zinc-800 flex items-center justify-between text-[9px] text-zinc-400 uppercase tracking-[0.2em] font-bold">
-                                        <span>No Booking Required</span>
-                                        <span>Stay as long as you like</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <div class="mt-20 p-8 bg-zinc-900 rounded-3xl border border-zinc-800 text-center">
-                        <p class="text-[11px] text-zinc-200 leading-loose tracking-[0.1em] font-medium">
-                            いつ行っても、いつ帰っても大丈夫。<br>
-                            その話題を、あなたのペースで。
-                        </p>
-                    </div>
-                </div>
-            `;
-        }
-
-        function toggleLike(id) {
-            const index = likedIds.indexOf(id);
-            const isAdding = index === -1;
-            
-            if (isAdding) {
-                likedIds.push(id);
-                showToast("STOCKED 🤍");
-            } else {
-                likedIds.splice(index, 1);
-            }
-
-            localStorage.setItem('yurucafe_likes', JSON.stringify(likedIds));
-            updateBadge();
-            
-            const currentView = document.getElementById('nav-finder-icon').parentElement.classList.contains('active') ? 'finder' : 'likes';
-            if (currentView === 'finder') {
-                renderFinder();
-            } else {
-                renderLikes();
-            }
-        }
-
-        function updateBadge() {
-            const badge = document.getElementById('like-badge');
-            if (likedIds.length > 0) {
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.style.opacity = '1';
-            setTimeout(() => {
-                toast.style.opacity = '0';
-            }, 2000);
-        }
-
-        window.onload = () => {
-            switchView('finder');
-            updateBadge();
-        };
-    </script>
-</body>
-</html>
+export default App;
