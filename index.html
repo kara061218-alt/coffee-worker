@@ -1,47 +1,240 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <!-- ★ 文字化け防止の最重要行（絶対に一番最初） -->
-    <meta charset="UTF-8" />
-
-    <!-- GitHub Pages / iOS / Android 安定用 -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
-
-    <title>Yurucafe</title>
-
-    <!-- 日本語フォント（HTML側で確定させる） -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Tailwind CDN（charsetの後！） -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yurucafe - 街に置かれた話題の気配</title>
+    
+    <!-- Scripts: React, Babel, Tailwind, Lucide -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-      /* フォントをHTML側で固定（Reactより強い） */
-      html,
-      body {
-        font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN",
-          "Yu Gothic", system-ui, -apple-system, BlinkMacSystemFont,
-          "Segoe UI", sans-serif;
-        background-color: #000;
-        color: #fff;
-      }
-    </style>
-  </head>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: #000;
+        }
 
-  <body>
-    <!-- React マウントポイント -->
+        /* 快適なスクロールとフェードインアニメーション */
+        .animate-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
     <div id="root"></div>
 
-    <!-- Vite / CRA 共通（GitHub Pages対応） -->
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    <script type="text/babel">
+        const { useState, useMemo, useEffect } = React;
+
+        // LucideアイコンをReactコンポーネントとしてラップするヘルパー
+        const Icon = ({ name, className, strokeWidth = 2 }) => {
+            const [iconSvg, setIconSvg] = useState('');
+
+            useEffect(() => {
+                // lucideがグローバルに読み込まれている前提
+                if (window.lucide) {
+                    const svg = window.lucide.createIcons();
+                }
+            }, []);
+
+            // シンプルなSVGレンダリング用（ここではLucideの標準的なパスをシミュレート、またはCDN版の仕様に合わせる）
+            // 実際にはlucide.createIcons()がDOMをスキャンするため、iタグを使用するのが最も確実です
+            return <i data-lucide={name} className={className} style={{ strokeWidth: `${strokeWidth}px` }}></i>;
+        };
+
+        const App = () => {
+            const [view, setView] = useState('finder');
+            const [day, setDay] = useState('today');
+            const [stocks, setStocks] = useState([]);
+            const [toast, setToast] = useState(null);
+
+            // 初期化時にアイコンを有効化
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, [view, day, stocks, toast]);
+
+            const allTopics = [
+                { 
+                    id: 1, 
+                    name: "Cafe Lento", 
+                    area: "下北沢", 
+                    topic: "留学時のカルチャーショック", 
+                    day: "today", 
+                    active: true, 
+                    presence: "夕暮れ時まで、置かれています",
+                    habit: "海外の空気を知る人が、ふらっと立ち寄る時間です",
+                    image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800" 
+                },
+                { 
+                    id: 2, 
+                    name: "Komorebi Tea House", 
+                    area: "吉祥寺", 
+                    topic: "高校時代にやらずに後悔していること", 
+                    day: "today", 
+                    active: true, 
+                    presence: "日没まで、置かれています",
+                    habit: "放課後のチャイムのような、少し切ない時間によく現れます",
+                    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800" 
+                },
+                { 
+                    id: 3, 
+                    name: "Standard Brew", 
+                    area: "中目黒", 
+                    topic: "人生が変わった映画", 
+                    day: "today", 
+                    active: false, 
+                    presence: "夜の静寂に、置かれ始めます",
+                    habit: "一日の終わりに、物語を反芻したくなる時間に馴染みます",
+                    image: "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=800" 
+                }
+            ];
+
+            const showMessage = (msg) => {
+                setToast(msg);
+                setTimeout(() => setToast(null), 3000);
+            };
+
+            const toggleStock = (id) => {
+                if (stocks.includes(id)) {
+                    setStocks(stocks.filter(s => s !== id));
+                } else {
+                    setStocks([...stocks, id]);
+                    showMessage("記憶の片隅に置きました");
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-black text-zinc-100 max-w-md mx-auto relative overflow-hidden pb-32">
+                    <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,#111,0%,#000_100%)] pointer-events-none" />
+
+                    {/* Header */}
+                    <header className="relative pt-16 px-8 pb-4 z-10">
+                        <h1 className="text-3xl font-bold tracking-[0.3em] uppercase opacity-90">Yurucafe</h1>
+                        <p className="text-[11px] text-zinc-500 mt-4 tracking-[0.15em] leading-relaxed font-medium italic">
+                            誰かと待ち合わせるのではなく、<br />
+                            そこに置かれている「話題」に会いに行く。
+                        </p>
+
+                        {view === 'finder' && (
+                            <div className="flex gap-6 mt-10 border-b border-white/5">
+                                <button onClick={() => setDay('today')} className={`pb-3 text-[12px] tracking-[0.2em] font-bold relative ${day === 'today' ? 'text-white' : 'text-zinc-600'}`}>
+                                    今日
+                                    {day === 'today' && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white" />}
+                                </button>
+                                <button onClick={() => setDay('tomorrow')} className={`pb-3 text-[12px] tracking-[0.2em] font-bold relative ${day === 'tomorrow' ? 'text-white' : 'text-zinc-600'}`}>
+                                    明日
+                                    {day === 'tomorrow' && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white" />}
+                                </button>
+                            </div>
+                        )}
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="relative px-6 z-10">
+                        {view === 'finder' && (
+                            <div className="animate-in">
+                                <p className="text-[11px] text-zinc-500 my-8 tracking-widest font-medium text-center">
+                                    {day === 'today' ? "いま、この瞬間の街の気配。" : "明日、ふっと思い出した時に寄れる気配。"}
+                                </p>
+                                <div className="space-y-16">
+                                    {allTopics.map(item => (
+                                        <div key={item.id} className="relative group">
+                                            <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-zinc-900 border border-white/5">
+                                                <img src={item.image} className="w-full h-full object-cover opacity-80" alt="" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                                                <div className="absolute top-6 left-6">
+                                                    <div className="flex items-center px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10">
+                                                        <span className={`w-2 h-2 rounded-full mr-3 ${item.active ? 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]' : 'bg-zinc-600'}`} />
+                                                        <span className="text-[10px] font-bold tracking-widest">{item.presence}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="absolute bottom-8 left-8 right-8">
+                                                    <span className="text-[8px] px-2 py-0.5 bg-white/10 rounded-sm border border-white/10 font-bold tracking-widest uppercase mb-2 inline-block">{item.area}</span>
+                                                    <h3 className="text-xl font-bold tracking-tight mb-2 text-white">{item.topic}</h3>
+                                                    <p className="text-[10px] text-zinc-400 font-bold tracking-[0.2em] uppercase">{item.name}</p>
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={() => toggleStock(item.id)}
+                                                className="absolute -bottom-4 right-8 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-xl active:scale-90 transition-all z-20"
+                                            >
+                                                <i data-lucide="heart" className={`w-5 h-5 ${stocks.includes(item.id) ? 'fill-rose-500 text-rose-500' : 'text-black'}`}></i>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'stocks' && (
+                            <div className="animate-in pt-6">
+                                <h2 className="text-2xl font-bold tracking-[0.2em] mb-8 text-zinc-100 uppercase">Stocks</h2>
+                                {stocks.length === 0 ? (
+                                    <div className="py-20 text-center border border-dashed border-zinc-800 rounded-[2rem]">
+                                        <i data-lucide="coffee" className="w-8 h-8 text-zinc-800 mx-auto mb-4 opacity-50"></i>
+                                        <p className="text-[11px] text-zinc-600 tracking-widest">記憶に留めた話題はまだありません。</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-12">
+                                        {allTopics.filter(t => stocks.includes(t.id)).map(item => (
+                                            <div key={item.id} className="bg-zinc-900/40 border border-white/5 rounded-[2.5rem] p-6">
+                                                <div className="flex gap-5 mb-4">
+                                                    <img src={item.image} className="w-20 h-20 rounded-2xl object-cover opacity-80" alt="" />
+                                                    <div>
+                                                        <h3 className="text-lg font-bold mb-1">{item.topic}</h3>
+                                                        <p className="text-[9px] text-zinc-500 tracking-widest font-bold uppercase">{item.name} / {item.area}</p>
+                                                    </div>
+                                                </div>
+                                                <p className="text-[11px] text-zinc-400 italic border-l-2 border-zinc-800 pl-4">{item.habit}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Navigation */}
+                    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-24 bg-black/90 backdrop-blur-xl border-t border-white/5 flex items-center justify-around px-10 z-50">
+                        <button onClick={() => setView('finder')} className={`flex flex-col items-center gap-2 ${view === 'finder' ? 'text-white' : 'text-zinc-600'}`}>
+                            <i data-lucide="search" className="w-6 h-6"></i>
+                            <span className="text-[8px] font-black tracking-[0.2em]">FINDER</span>
+                        </button>
+                        <button className="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center border border-zinc-700 -mt-8 shadow-2xl">
+                            <i data-lucide="plus" className="w-6 h-6 text-zinc-500"></i>
+                        </button>
+                        <button onClick={() => setView('stocks')} className={`flex flex-col items-center gap-2 ${view === 'stocks' ? 'text-white' : 'text-zinc-600'}`}>
+                            <div className="relative">
+                                <i data-lucide="heart" className={`w-6 h-6 ${view === 'stocks' ? 'text-rose-400' : ''}`}></i>
+                                {stocks.length > 0 && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-black" />}
+                            </div>
+                            <span className="text-[8px] font-black tracking-[0.2em]">STOCKS</span>
+                        </button>
+                    </nav>
+
+                    {/* Toast */}
+                    {toast && (
+                        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-white text-black px-6 py-2 rounded-full text-[10px] font-bold tracking-[0.2em] shadow-2xl animate-in z-[100]">
+                            {toast}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
 </html>
