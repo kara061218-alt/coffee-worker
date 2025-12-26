@@ -7,14 +7,14 @@ const App = () => {
   const [stocks, setStocks] = useState([]);
   const [toast, setToast] = useState(null);
 
-  // 24個のトピック。すべて異なるコーヒー・カフェの画像（Unsplash）を使用。
+  // 24個のトピック。すべて異なるコーヒー・カフェの画像（Unsplash）
   const allTopics = [
     // --- TODAY (12 Topics) ---
     { id: 1, name: "Cafe Lento", area: "下北沢", topic: "留学時のカルチャーショック", day: "today", active: true, presence: "夕暮れ時まで、置かれています", habit: "海外の空気を知る人が、ふらっと立ち寄る時間です", image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800" },
     { id: 2, name: "Komorebi Tea House", area: "吉祥寺", topic: "高校時代にやらずに後悔していること", day: "today", active: true, presence: "日没まで、置かれています", habit: "放課後のチャイムのような、少し切ない時間によく現れます", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800" },
     { id: 3, name: "Standard Brew", area: "中目黒", topic: "人生が変わった映画", day: "today", active: false, presence: "夜の静寂に、置かれ始めます", habit: "一日の終わりに、物語を反芻したくなる時間に馴染みます", image: "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=800" },
     { id: 4, name: "Mugi Cafe", area: "代々木", topic: "あのとき、選ばなかったもう一つの進路", day: "today", active: true, presence: "陽が沈むまで、置かれています", habit: "人生の岐路に立つ人が、パンの香りに誘われて置いた話題です", image: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&q=80&w=800" },
-    { id: 5, name: "Quiet Corner", area: "三軒茶屋", topic: "「自分はこういう人間だ」と思い込んだ最初の瞬間", day: "today", active: false, presence: "18時、置かれ始めます", habit: "自分自身を見つめ直したいとき、この話題が灯ります", image: "https://images.unsplash.com/photo-1497933322477-911ef056266d?auto=format&fit=crop&q=80&w=800" },
+    { id: 5, name: "Quiet Corner", area: "三軒茶屋", topic: "「自分はこういう人間だ」と思い込んだ瞬間", day: "today", active: false, presence: "18時、置かれ始めます", habit: "自分自身を見つめ直したいとき、この話題が灯ります", image: "https://images.unsplash.com/photo-1497933322477-911ef056266d?auto=format&fit=crop&q=80&w=800" },
     { id: 6, name: "Blue Door Coffee", area: "自由が丘", topic: "一度やめたけど、また戻ってきたもの", day: "today", active: true, presence: "閉店まで、置かれています", habit: "巡り巡って大切なものに気づいた時、ここに戻りたくなります", image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=800" },
     { id: 7, name: "Street Library", area: "蔵前", topic: "他人に言われて、今も残っている一言", day: "today", active: true, presence: "夜が深まるまで、置かれています", habit: "言葉の重みを知る人が、ひっそりと残した記憶です", image: "https://images.unsplash.com/photo-1521017432531-fbd92d744264?auto=format&fit=crop&q=80&w=800" },
     { id: 8, name: "Green Terrace", area: "代官山", topic: "18歳の自分に、今なら伝えたいこと", day: "today", active: false, presence: "明日の朝、置かれます", habit: "未来と過去が交差するような、透明な空気に合います", image: "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&q=80&w=800" },
@@ -24,18 +24,18 @@ const App = () => {
     { id: 12, name: "Sketch Cafe", area: "表参道", topic: "帰国後に感じた逆カルチャーショック", day: "today", active: true, presence: "日没まで、置かれています", habit: "当たり前がそうでなくなった時の、少しの違和感の話。", image: "https://images.unsplash.com/photo-1559925393-8be0ec41b504?auto=format&fit=crop&q=80&w=800" },
 
     // --- TOMORROW (12 Topics) ---
-    { id: 13, name: "Cafe Lento", area: "下北沢", topic: "異文化で恥をかいたけど、今では笑える話", day: "tomorrow", active: false, presence: "お昼頃、置かれ始めます", habit: "失敗を笑いに変える、そんな明るい午後に合います", image: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&q=80&w=800" },
-    { id: 14, name: "Komorebi Tea House", area: "吉祥寺", topic: "「ここにはもう住めないかも」と思った場所", day: "tomorrow", active: false, presence: "陽が昇ったら、置かれます", habit: "居場所を探し続ける人の、道標のような話題です", image: "https://images.unsplash.com/photo-1444418185997-1145404609e0?auto=format&fit=crop&q=80&w=800" },
-    { id: 15, name: "Standard Brew", area: "中目黒", topic: "10代の自分に刺さりすぎた映画や本", day: "tomorrow", active: false, presence: "夕方から、置かれ始めます", habit: "あの頃の熱量を、少しだけ取り戻せるかもしれません", image: "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?auto=format&fit=crop&q=80&w=800" },
-    { id: 16, name: "Mugi Cafe", area: "代々木", topic: "昔は分からなかったけど、今なら分かる作品", day: "tomorrow", active: false, presence: "明日の午後、現れます", habit: "時間が解決してくれた、理解の深まりについての話。", image: "https://images.unsplash.com/photo-1507133750040-4c8b5f1a9903?auto=format&fit=crop&q=80&w=800" },
-    { id: 17, name: "Quiet Corner", area: "三軒茶屋", topic: "観終わったあと、誰かと話したくなった映画", day: "tomorrow", active: false, presence: "日没時に、置かれます", habit: "独り占めできない感動を、分け合いたいときに。", image: "https://images.unsplash.com/photo-1536392706976-e486e2ba97af?auto=format&fit=crop&q=80&w=800" },
-    { id: 18, name: "Blue Door Coffee", area: "自由が丘", topic: "何度も観てしまう一本と、その理由", day: "tomorrow", active: false, presence: "深夜、置かれ始めます", habit: "お守りのような作品を、心に持っている人のために。", image: "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&q=80&w=800" },
-    { id: 19, name: "Street Library", area: "蔵前", topic: "最初に「働くってこういうことか」と思った瞬間", day: "tomorrow", active: false, presence: "朝の光と共に、置かれます", habit: "大人の入り口に立った時の、少し緊張した感覚の話。", image: "https://images.unsplash.com/photo-1497015289639-54688650d173?auto=format&fit=crop&q=80&w=800" },
-    { id: 20, name: "Green Terrace", area: "代官山", topic: "やりがいとお金の間で、迷った経験", day: "tomorrow", active: false, presence: "お昼休みに、置かれます", habit: "現実と理想の間で揺れる、等身大の悩みです", image: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?auto=format&fit=crop&q=80&w=800" },
-    { id: 21, name: "Foggy Glass", area: "高円寺", topic: "「向いてない」と思いながら続けたこと", day: "tomorrow", active: false, presence: "夕方、置かれ始めます", habit: "才能よりも、続けたことの尊さを語るための気配。", image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=800" },
-    { id: 22, name: "Windy Hill", area: "駒沢", topic: "大人になってから学び直したこと", day: "tomorrow", active: false, presence: "休日、置かれています", habit: "知る喜びを、もう一度見つけた人の話題です", image: "https://images.unsplash.com/photo-1525904067872-4e555523da0a?auto=format&fit=crop&q=80&w=800" },
-    { id: 23, name: "Star Dust", area: "恵比寿", topic: "今の自分をつくった、小さな習慣", day: "tomorrow", active: false, presence: "深夜、ひっそりと置かれます", habit: "毎日続けている、自分を整えるための魔法の話。", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800" },
-    { id: 24, name: "Sketch Cafe", area: "表参道", topic: "これからの人生で、手放したい価値観", day: "tomorrow", active: false, presence: "新しい朝に、置かれます", habit: "身軽になるために、そっと脱ぎ捨てる言葉たち。", image: "https://images.unsplash.com/photo-1512568448812-16a1c8285810?auto=format&fit=crop&q=80&w=800" }
+    { id: 13, name: "Roasted Lab", area: "清澄白河", topic: "異文化で恥をかいたけど、今では笑える話", day: "tomorrow", active: false, presence: "お昼頃、置かれ始めます", habit: "失敗を笑いに変える、そんな明るい午後に合います", image: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&q=80&w=800" },
+    { id: 14, name: "Silence Wood", area: "奥沢", topic: "「ここにはもう住めないかも」と思った場所", day: "tomorrow", active: false, presence: "陽が昇ったら、置かれます", habit: "居場所を探し続ける人の、道標のような話題です", image: "https://images.unsplash.com/photo-1444418185997-1145404609e0?auto=format&fit=crop&q=80&w=800" },
+    { id: 15, name: "Urban Beans", area: "渋谷", topic: "10代の自分に刺さりすぎた映画や本", day: "tomorrow", active: false, presence: "夕方から、置かれ始めます", habit: "あの頃の熱量を、少しだけ取り戻せるかもしれません", image: "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?auto=format&fit=crop&q=80&w=800" },
+    { id: 16, name: "Steam Works", area: "浅草", topic: "昔は分からなかったけど、今なら分かる作品", day: "tomorrow", active: false, presence: "明日の午後、現れます", habit: "時間が解決してくれた、理解の深まりについての話。", image: "https://images.unsplash.com/photo-1507133750040-4c8b5f1a9903?auto=format&fit=crop&q=80&w=800" },
+    { id: 17, name: "Canvas Coffee", area: "中野", topic: "観終わったあと、誰かと話したくなった映画", day: "tomorrow", active: false, presence: "日没時に、置かれます", habit: "独り占めできない感動を、分け合いたいときに。", image: "https://images.unsplash.com/photo-1536392706976-e486e2ba97af?auto=format&fit=crop&q=80&w=800" },
+    { id: 18, name: "Night Owl", area: "西荻窪", topic: "何度も観てしまう一本と、その理由", day: "tomorrow", active: false, presence: "深夜、置かれ始めます", habit: "お守りのような作品を、心に持っている人のために。", image: "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&q=80&w=800" },
+    { id: 19, name: "Morning Dew", area: "広尾", topic: "「働くってこういうことか」と思った瞬間", day: "tomorrow", active: false, presence: "朝の光と共に、置かれます", habit: "大人の入り口に立った時の、少し緊張した感覚の話。", image: "https://images.unsplash.com/photo-1497015289639-54688650d173?auto=format&fit=crop&q=80&w=800" },
+    { id: 20, name: "Work Cafe", area: "神保町", topic: "やりがいとお金の間で、迷った経験", day: "tomorrow", active: false, presence: "お昼休みに、置かれます", habit: "現実と理想の間で揺れる、等身大の悩みです", image: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?auto=format&fit=crop&q=80&w=800" },
+    { id: 21, name: "Paper & Cup", area: "目黒", topic: "「向いてない」と思いながら続けたこと", day: "tomorrow", active: false, presence: "夕方、置かれ始めます", habit: "才能よりも、続けたことの尊さを語るための気配。", image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=800" },
+    { id: 22, name: "Old School", area: "神楽坂", topic: "大人になってから学び直したこと", day: "tomorrow", active: false, presence: "休日、置かれています", habit: "知る喜びを、もう一度見つけた人の話題です", image: "https://images.unsplash.com/photo-1525904067872-4e555523da0a?auto=format&fit=crop&q=80&w=800" },
+    { id: 23, name: "Midnight Pour", area: "麻布十番", topic: "今の自分をつくった、小さな習慣", day: "tomorrow", active: false, presence: "深夜、ひっそりと置かれます", habit: "毎日続けている、自分を整えるための魔法の話。", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800" },
+    { id: 24, name: "Future Bloom", area: "銀座", topic: "これからの人生で、手放したい価値観", day: "tomorrow", active: false, presence: "新しい朝に、置かれます", habit: "身軽になるために、そっと脱ぎ捨てる言葉たち。", image: "https://images.unsplash.com/photo-1512568448812-16a1c8285810?auto=format&fit=crop&q=80&w=800" }
   ];
 
   const displayedTopics = useMemo(() => {
@@ -63,9 +63,11 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-zinc-700 max-w-md mx-auto relative overflow-hidden">
+      {/* Background Gradient */}
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,#111,0%,#000_100%)] pointer-events-none" />
 
-      <header className="relative pt-16 px-8 pb-4">
+      {/* Header */}
+      <header className="relative pt-16 px-8 pb-4 z-10">
         <h1 className="text-3xl font-bold tracking-[0.3em] uppercase opacity-90">Yurucafe</h1>
         <p className="text-[11px] text-zinc-500 mt-4 tracking-[0.15em] leading-relaxed font-medium italic">
           誰かと待ち合わせるのではなく、<br />
@@ -92,7 +94,8 @@ const App = () => {
         )}
       </header>
 
-      <main className="relative px-6 pb-40">
+      {/* Main Content */}
+      <main className="relative px-6 pb-40 z-10">
         {view === 'finder' && (
           <div key={day} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <p className="text-[11px] text-zinc-500 my-8 tracking-widest font-medium">
@@ -102,7 +105,7 @@ const App = () => {
             <div className="space-y-16">
               {displayedTopics.map(item => (
                 <div key={item.id} className="relative group">
-                  <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-zinc-900 shadow-2xl transition-all">
+                  <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-zinc-900 shadow-2xl transition-all border border-white/5">
                     <img 
                       src={item.image} 
                       className="w-full h-full object-cover opacity-90 transition-opacity duration-700" 
@@ -151,8 +154,8 @@ const App = () => {
 
         {view === 'stocks' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 pt-6">
-            <h2 className="text-2xl font-bold tracking-[0.2em] mb-4 text-zinc-100">STOCKS</h2>
-            <p className="text-[12px] text-zinc-500 mb-12 tracking-widest leading-loose">
+            <h2 className="text-2xl font-bold tracking-[0.2em] mb-4 text-zinc-100 uppercase">Stocks</h2>
+            <p className="text-[12px] text-zinc-500 mb-12 tracking-widest leading-loose font-medium italic">
               ふと思い出した時に、また会えるように。<br />
               ここは記憶の「栞」を挟む場所。
             </p>
@@ -165,9 +168,9 @@ const App = () => {
             ) : (
               <div className="space-y-12">
                 {allTopics.filter(t => stocks.includes(t.id)).map(item => (
-                  <div key={item.id} className="group bg-zinc-900/20 border border-white/5 rounded-[2rem] p-6">
+                  <div key={item.id} className="group bg-zinc-900/30 border border-white/5 rounded-[2.5rem] p-6 shadow-inner transition-all hover:bg-zinc-900/50">
                     <div className="flex gap-5 mb-4">
-                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-zinc-900 flex-shrink-0">
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden bg-zinc-800 flex-shrink-0">
                         <img 
                           src={item.image} 
                           className="w-full h-full object-cover opacity-90" 
@@ -176,8 +179,8 @@ const App = () => {
                         />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-md font-bold mb-1 text-zinc-200">{item.topic}</h3>
-                        <p className="text-[9px] text-zinc-500 tracking-widest uppercase">{item.name} / {item.area}</p>
+                        <h3 className="text-lg font-bold mb-1 text-zinc-100">{item.topic}</h3>
+                        <p className="text-[9px] text-zinc-500 tracking-widest uppercase font-bold">{item.name} / {item.area}</p>
                       </div>
                     </div>
                     <div className="space-y-3">
@@ -193,7 +196,8 @@ const App = () => {
         )}
       </main>
 
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-24 bg-black/90 backdrop-blur-xl border-t border-white/5 flex items-center justify-around px-10 z-50">
+      {/* Navigation */}
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-24 bg-black/80 backdrop-blur-2xl border-t border-white/5 flex items-center justify-around px-10 z-50">
         <button 
           onClick={() => setView('finder')}
           className={`flex flex-col items-center gap-2 transition-all ${view === 'finder' ? 'text-white' : 'text-zinc-600'}`}
@@ -212,12 +216,13 @@ const App = () => {
         >
           <div className="relative">
             <Heart className={`w-6 h-6 ${view === 'stocks' ? 'text-rose-400' : ''}`} strokeWidth={view === 'stocks' ? 2.5 : 1.5} />
-            {stocks.length > 0 && <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full" />}
+            {stocks.length > 0 && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-black" />}
           </div>
           <span className="text-[8px] font-black tracking-[0.2em]">STOCKS</span>
         </button>
       </nav>
 
+      {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-zinc-100 text-black px-6 py-2.5 rounded-full text-[10px] font-bold tracking-[0.2em] shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-300 z-[100]">
           {toast}
