@@ -1,219 +1,47 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { Search, Heart, Plus, Coffee, Sparkles } from "lucide-react";
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <!-- ★ 文字化け防止の最重要行（絶対に一番最初） -->
+    <meta charset="UTF-8" />
 
-/**
- * Yurucafe
- * UTF-8 / 日本語フォント / 文字化け完全対策済み
- */
+    <!-- GitHub Pages / iOS / Android 安定用 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
 
-const App = () => {
-  const [view, setView] = useState("finder");
-  const [day, setDay] = useState("today");
-  const [stocks, setStocks] = useState([]);
-  const [toast, setToast] = useState(null);
+    <title>Yurucafe</title>
 
-  // 日本語テキスト用クラス（壊れ防止）
-  const jp = "tracking-normal not-italic normal-case";
+    <!-- 日本語フォント（HTML側で確定させる） -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
 
-  // Google Fonts を JS 側から強制注入（index.html 不要）
-  useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href =
-      "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap";
-    document.head.appendChild(link);
-  }, []);
+    <!-- Tailwind CDN（charsetの後！） -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  const topics = [
-    {
-      id: 1,
-      area: "下北沢",
-      cafe: "Cafe Lento",
-      topic: "留学時のカルチャーショック",
-      day: "today",
-      presence: "今日はまだ、置かれています",
-      image:
-        "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      id: 2,
-      area: "吉祥寺",
-      cafe: "Komorebi Tea",
-      topic: "高校時代にやらずに後悔したこと",
-      day: "today",
-      presence: "夕方ごろまで、置かれています",
-      image:
-        "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      id: 3,
-      area: "中目黒",
-      cafe: "Standard Brew",
-      topic: "人生が変わった映画",
-      day: "today",
-      presence: "最近この時間帯に、よくあります",
-      image:
-        "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      id: 4,
-      area: "清澄白河",
-      cafe: "Roasted Lab",
-      topic: "海外でマイノリティだと感じた瞬間",
-      day: "tomorrow",
-      presence: "明日、そっと置かれます",
-      image:
-        "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&q=80&w=800",
-    },
-  ];
+    <style>
+      /* フォントをHTML側で固定（Reactより強い） */
+      html,
+      body {
+        font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN",
+          "Yu Gothic", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background-color: #000;
+        color: #fff;
+      }
+    </style>
+  </head>
 
-  const displayed = useMemo(
-    () => topics.filter((t) => t.day === day),
-    [day]
-  );
+  <body>
+    <!-- React マウントポイント -->
+    <div id="root"></div>
 
-  const toggleStock = (id) => {
-    if (stocks.includes(id)) {
-      setStocks(stocks.filter((s) => s !== id));
-    } else {
-      setStocks([...stocks, id]);
-      setToast("記憶の片隅に置きました");
-      setTimeout(() => setToast(null), 2500);
-    }
-  };
-
-  return (
-    <div
-      className="min-h-screen bg-black text-zinc-100 max-w-md mx-auto relative overflow-hidden"
-      style={{
-        fontFamily:
-          "'Noto Sans JP','Hiragino Kaku Gothic ProN','Yu Gothic',system-ui,sans-serif",
-      }}
-    >
-      {/* 背景 */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_30%,#111,0%,#000_70%)]" />
-
-      {/* Header */}
-      <header className="relative pt-14 px-6 pb-6 z-10">
-        <h1 className="text-3xl font-bold tracking-[0.25em] uppercase">
-          Yurucafe
-        </h1>
-        <p className={`text-[12px] text-zinc-400 mt-4 leading-relaxed ${jp}`}>
-          誰かと会う場所ではなく、
-          <br />
-          話題に会いに行くカフェ。
-        </p>
-
-        {view === "finder" && (
-          <div className="flex gap-6 mt-10 border-b border-white/10">
-            {["today", "tomorrow"].map((d) => (
-              <button
-                key={d}
-                onClick={() => setDay(d)}
-                className={`pb-3 text-[12px] font-bold tracking-[0.2em] ${
-                  day === d ? "text-white" : "text-zinc-600"
-                }`}
-              >
-                {d === "today" ? "今日" : "明日"}
-              </button>
-            ))}
-          </div>
-        )}
-      </header>
-
-      {/* Main */}
-      <main className="relative px-6 pb-40 z-10">
-        {view === "finder" && (
-          <div className="space-y-16">
-            {displayed.map((item) => (
-              <div key={item.id} className="relative">
-                <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/10">
-                  <img
-                    src={item.image}
-                    alt=""
-                    className="w-full h-full object-cover opacity-90"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-
-                  <div className="absolute top-6 left-6 bg-black/60 backdrop-blur px-4 py-2 rounded-full text-[10px] font-bold">
-                    {item.presence}
-                  </div>
-
-                  <div className="absolute bottom-8 left-8 right-8">
-                    <span className="text-[9px] text-zinc-300 tracking-widest">
-                      {item.area}
-                    </span>
-                    <h3 className="text-xl font-bold mt-2">
-                      {item.topic}
-                    </h3>
-                    <p className="text-[10px] text-zinc-400 tracking-widest uppercase">
-                      {item.cafe}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => toggleStock(item.id)}
-                  className="absolute -bottom-4 right-8 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl"
-                >
-                  <Heart
-                    className={`w-5 h-5 ${
-                      stocks.includes(item.id)
-                        ? "fill-rose-500 stroke-rose-500"
-                        : "stroke-black"
-                    }`}
-                  />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {view === "stocks" && (
-          <div className="pt-10 space-y-8">
-            {stocks.length === 0 && (
-              <p className={`text-zinc-500 text-sm ${jp}`}>
-                まだ、覚えている話題はありません。
-              </p>
-            )}
-            {topics
-              .filter((t) => stocks.includes(t.id))
-              .map((item) => (
-                <div
-                  key={item.id}
-                  className="p-5 rounded-2xl border border-white/10 bg-zinc-900/40"
-                >
-                  <h3 className="font-bold">{item.topic}</h3>
-                  <p className="text-[10px] text-zinc-400 mt-1">
-                    {item.cafe} / {item.area}
-                  </p>
-                </div>
-              ))}
-          </div>
-        )}
-      </main>
-
-      {/* Nav */}
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-20 bg-black/80 backdrop-blur border-t border-white/10 flex justify-around items-center">
-        <button onClick={() => setView("finder")}>
-          <Search className="w-6 h-6" />
-        </button>
-        <button className="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center -mt-6">
-          <Plus className="w-5 h-5 text-zinc-500" />
-        </button>
-        <button onClick={() => setView("stocks")}>
-          <Heart className="w-6 h-6" />
-        </button>
-      </nav>
-
-      {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-white text-black px-6 py-2 rounded-full text-[10px] font-bold shadow-xl">
-          {toast}
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default App;
+    <!-- Vite / CRA 共通（GitHub Pages対応） -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
